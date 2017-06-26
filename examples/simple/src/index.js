@@ -17,7 +17,7 @@ wurd.connect('example', {
 
 // Load initial content (e.g. app name, titles etc.)
 // Additional content can be loaded later as required; for example loading content by page
-wurd.load('simple,react')
+wurd.load('home,nav')
   .then(content => {
     ReactDOM.render(<App />, document.getElementById('root'));
   });

@@ -1,29 +1,36 @@
 import React, {Component} from 'react';
 import {WurdText, WurdImage, WurdList, WurdMarkdown} from '../../../dist/wurd';
 
+import Nav from './nav';
+
 
 class App extends Component {
 
   render() {
     return (
       <div>
-        <WurdImage id="simple.image" width="100%" />
+        <Nav />
+        
+        <WurdImage id="home.heroImage" width="100%" />
 
-        <h1><WurdText id="simple.title" /></h1>
+        <h2><WurdText id="home.welcome.title" /></h2>
 
-        <WurdMarkdown id="simple.intro" />
+        <WurdText 
+          id="home.welcome.intro" 
+          type="div"
+          className="alert alert-info" 
+          vars={{name: 'John'}}
+        />
+
+        <WurdMarkdown id="home.welcome.markdown" />
 
         <hr />
 
-        <h1><WurdText id="react.title" /></h1>
+        <h2><WurdText id="home.team.title" /></h2>
 
-        <WurdMarkdown id="react.intro" vars={{name: 'John'}} />
-
-        <h2><WurdText id="react.team.title" /></h2>
-        <WurdList id="react.team.items" type="ol">
-          <WurdImage id=".image" width="50" height="50" />
-          <WurdText type="h3" id=".name" />
-          <WurdText id=".position" />
+        <WurdList id="home.team.members">
+          <WurdImage id=".image" width="75" />
+          <WurdText id=".name" />
         </WurdList>
       </div>
     );
