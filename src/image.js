@@ -3,12 +3,12 @@ import wurd from 'wurd-web';
 
 
 const WurdImage = (props) => {
-  let {id} = props;
+  let {id, sid, ...rest} = props;
 
   let url = wurd.get(id);
 
   return (
-    <img {...props} data-wurd-img={id} src={url} />
+    <img {...rest} data-wurd-img={sid || id} src={url} />
   );
 };
 

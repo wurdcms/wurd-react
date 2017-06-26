@@ -1,30 +1,19 @@
 import React from 'react';
 import wurd from 'wurd-web';
-import marked from 'marked';
+import {replaceVars} from './utils';
 
 
-const WurdText = ({id, sid, type, vars, markdown}) => {
+const WurdText = ({id, sid, type = 'span', vars, ...rest}) => {
+
   let text = wurd.get(id);
 
   // Replace variables with {{mustache}} style tags
-  if (vars) {
-    Object.keys(vars).forEach(key => {
-      let val = vars[key];
+  if (vars) text = replaceVars(text, vars);
 
-      text = text.replace(`{{${key}}}`, val);
-    });
-  }
-
-  if (markdown && text) { // Check for text first to prevent markdown error
-    return (
-      React.createElement(type || 'div', {
-        'data-wurd-md': sid || id,
-        'dangerouslySetInnerHTML': { __html: marked(text) }
-      })
-    );
-  }
-
-  return React.createElement(type || 'span', { 'data-wurd': sid || id }, text);
+  return React.createElement(type, {
+    ...rest,
+    'data-wurd': sid || id
+  }, text);
 
 };
 
