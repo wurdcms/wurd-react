@@ -296,6 +296,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
 var _wurdWeb = __webpack_require__(0);
 
 var _wurdWeb2 = _interopRequireDefault(_wurdWeb);
@@ -308,7 +312,7 @@ var WurdImage = function WurdImage(props) {
 
   var url = _wurdWeb2.default.get(id);
 
-  return React.createElement('img', _extends({}, props, { 'data-wurd-img': id, src: url }));
+  return _react2.default.createElement('img', _extends({}, props, { 'data-wurd-img': id, src: url }));
 };
 
 exports.default = WurdImage;
@@ -456,7 +460,7 @@ function some(arr, fn) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.List = exports.Image = exports.Text = exports.wurd = undefined;
+exports.WurdList = exports.WurdImage = exports.WurdText = exports.wurd = undefined;
 
 var _wurdWeb = __webpack_require__(0);
 
@@ -477,9 +481,9 @@ var _list2 = _interopRequireDefault(_list);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.wurd = _wurdWeb2.default;
-exports.Text = _text2.default;
-exports.Image = _image2.default;
-exports.List = _list2.default;
+exports.WurdText = _text2.default;
+exports.WurdImage = _image2.default;
+exports.WurdList = _list2.default;
 
 /***/ }),
 /* 7 */

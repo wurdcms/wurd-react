@@ -1,3 +1,4 @@
+import React from 'react';
 import wurd from 'wurd-web';
 
 
