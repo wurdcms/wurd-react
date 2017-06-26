@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import wurd from 'wurd-web';
 import marked from 'marked';
 
@@ -27,15 +26,6 @@ const WurdText = ({id, sid, type, vars, markdown}) => {
 
   return React.createElement(type || 'span', { 'data-wurd': sid || id }, text);
 
-};
-
-
-WurdText.propTypes = {
-  id: PropTypes.string.isRequired,
-  sid: PropTypes.string,
-  type: PropTypes.string,
-  vars: PropTypes.object,
-  markdown: PropTypes.bool
 };
 
 

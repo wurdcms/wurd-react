@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import wurd from 'wurd-web';
 
 
@@ -10,11 +9,6 @@ const WurdImage = (props) => {
   return (
     <img {...props} data-wurd-img={id} src={url} />
   );
-};
-
-
-WurdImage.propTypes = {
-  id: PropTypes.string.isRequired
 };
 
 

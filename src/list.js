@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import wurd from 'wurd-web';
 
 
@@ -18,11 +17,6 @@ const WurdList = ({id, children}) => {
       )}
     </ul>
   );
-};
-
-
-WurdList.propTypes = {
-  id: PropTypes.string.isRequired
 };
 
 

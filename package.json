@@ -39,7 +39,6 @@
   "license": "ISC",
   "dependencies": {
     "marked": "^0.3.6",
-    "prop-types": "^15.0",
     "wurd-web": "https://github.com/wurdcms/wurd-web"
   },
   "peerDependencies": {
