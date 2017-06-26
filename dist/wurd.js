@@ -466,6 +466,8 @@ var _utils = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 var WurdText = function WurdText(_ref) {
@@ -477,13 +479,15 @@ var WurdText = function WurdText(_ref) {
       rest = _objectWithoutProperties(_ref, ['id', 'sid', 'type', 'vars']);
 
   var text = _wurdWeb2.default.get(id);
+  var editorType = 'data-wurd';
 
   // Replace variables with {{mustache}} style tags
-  if (vars) text = (0, _utils.replaceVars)(text, vars);
+  if (vars) {
+    text = (0, _utils.replaceVars)(text, vars);
+    editorType = 'data-wurd-md';
+  }
 
-  return _react2.default.createElement(type, _extends({}, rest, {
-    'data-wurd': sid || id
-  }), text);
+  return _react2.default.createElement(type, _extends({}, rest, _defineProperty({}, editorType, sid || id)), text);
 };
 
 exports.default = WurdText;
