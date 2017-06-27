@@ -63,9 +63,10 @@ Creates an editable image (`<img>`).
 ### WurdMarkdown
 Creates an editable text region that displays formatted Markdown.
 
+NOTE: This uses dangerouslySetInnerHTML, [read up on it here](https://facebook.github.io/react/docs/dom-elements.html#dangerouslysetinnerhtml).
+
 ![WurdMarkdown example](https://wurdcms.github.io/images/markdown.gif)
 
-NOTE: This uses dangerouslySetInnerHTML, [read up on it here](https://facebook.github.io/react/docs/dom-elements.html#dangerouslysetinnerhtml).
 ```jsx
 <WurdMarkdown
   id="section.itemId",    // Required
