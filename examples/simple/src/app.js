@@ -11,7 +11,7 @@ class App extends Component {
       <div>
         <Nav />
         
-        <WurdImage id="home.heroImage" width="100%" />
+        <WurdImage id="home.heroImage" style={{objectFit: 'cover', width: '100%', height: 200}} />
 
         <h2><WurdText id="home.welcome.title" /></h2>
 
