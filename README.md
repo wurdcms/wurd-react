@@ -36,6 +36,9 @@ npm install wurd-react
 ## Components
 ### WurdText
 Creates an editable text region.
+
+![WurdText example](https://wurdcms.github.io/images/text-vars.gif)
+
 ```jsx
 <WurdText
   id="section.itemId",    // Required
@@ -47,6 +50,9 @@ Creates an editable text region.
 
 ### WurdImage
 Creates an editable image (`<img>`).
+
+![WurdImage example](https://wurdcms.github.io/images/image.gif)
+
 ```jsx
 <WurdImage
   id="section.itemId",     //Required
@@ -56,6 +62,8 @@ Creates an editable image (`<img>`).
 
 ### WurdMarkdown
 Creates an editable text region that displays formatted Markdown.
+
+![WurdMarkdown example](https://wurdcms.github.io/images/markdown.gif)
 
 NOTE: This uses dangerouslySetInnerHTML, [read up on it here](https://facebook.github.io/react/docs/dom-elements.html#dangerouslysetinnerhtml).
 ```jsx
