@@ -4,7 +4,7 @@ Wurd is a service that lets you integrate a CMS into any website or app in minut
 
 ## Example
 ```jsx
-import {wurd, WurdText} from 'wurd-react';
+import wurd, {WurdText} from 'wurd-react';
 
 wurd.connect('myApp');
 

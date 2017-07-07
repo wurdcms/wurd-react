@@ -532,7 +532,7 @@ function some(arr, fn) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.WurdMarkdown = exports.WurdList = exports.WurdImage = exports.WurdText = exports.wurd = undefined;
+exports.WurdMarkdown = exports.WurdList = exports.WurdImage = exports.WurdText = undefined;
 
 var _wurdWeb = __webpack_require__(0);
 
@@ -556,7 +556,7 @@ var _markdown2 = _interopRequireDefault(_markdown);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.wurd = _wurdWeb2.default;
+exports.default = _wurdWeb2.default;
 exports.WurdText = _text2.default;
 exports.WurdImage = _image2.default;
 exports.WurdList = _list2.default;

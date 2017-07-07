@@ -5,8 +5,9 @@ import WurdList from './list';
 import WurdMarkdown from './markdown';
 
 
+export default wurd;
+
 export {
-  wurd,
   WurdText,
   WurdImage,
   WurdList,

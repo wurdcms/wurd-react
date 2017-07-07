@@ -4,7 +4,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {wurd} from '../../../dist/wurd'; // In your app this should require the `wurd-react` module
+import wurd, {WurdText} from '../../../dist/wurd'; // In your app this should require the `wurd-react` module
 
 import App from './app';
 

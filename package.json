@@ -1,9 +1,8 @@
 {
   "name": "wurd-react",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Components to easily integrate the Wurd CMS into your React app",
   "main": "dist/wurd.js",
-  "module": "src/index.js",
   "scripts": {
     "build": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
