@@ -8,6 +8,9 @@ const WurdMarkdown = ({id, sid, type = 'div', vars, ...rest}) => {
 
   let text = wurd.get(id);
 
+  // Prevent error from Markdown parser by always passing a string
+  text = text || '';
+
   // Replace variables with {{mustache}} style tags
   if (vars) text = replaceVars(text, vars);
 
