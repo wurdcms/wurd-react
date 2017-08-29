@@ -11,13 +11,14 @@ import App from './app';
 
 //Connect to Wurd CMS
 wurd.connect('example', {
-  editMode: true, //Always in edit mode
+  editMode: 'querystring', //Add '?edit to the URL to trigger edit mode'
 });
 
 
 // Load initial content (e.g. app name, titles etc.)
 // Additional content can be loaded later as required; for example loading content by page
 wurd.load('home,nav')
+  .catch(err => console.error(err))
   .then(content => {
     ReactDOM.render(<App />, document.getElementById('root'));
   });
