@@ -88,3 +88,7 @@ Any `WurdText`, `WurdItem` etc. children should be immediate children and use th
   <WurdText id=".name" />
 </WurdList>
 ```
+
+
+### WurdObject
+Todo

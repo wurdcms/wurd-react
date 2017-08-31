@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -322,7 +322,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           _classCallCheck(this, Wurd);
 
           this.appName = null;
-          this.options = {};
+          this.draft = false;
+          this.editMode = false;
 
           // Object to store all content that's loaded
           this.content = {};
@@ -333,18 +334,28 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
          *
          * @param {String} appName
          * @param {Object} [options]
-         * @param {Boolean} [options.draft]             If true, loads draft content; otherwise loads published content
          * @param {Boolean|String} [options.editMode]   Options for enabling edit mode: `true` or `'querystring'`
+         * @param {Boolean} [options.draft]             If true, loads draft content; otherwise loads published content
          */
 
         _createClass(Wurd, [{
           key: 'connect',
-          value: function connect(appName, options) {
+          value: function connect(appName) {
+            var _this = this;
+
+            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
             this.appName = appName;
-            this.options = _extends({}, options);
+
+            // Set allowed options
+            ['draft', 'lang', 'debug'].forEach(function (name) {
+              var val = options[name];
+
+              if (typeof val !== 'undefined') _this[name] = val;
+            });
 
             // Activate edit mode if required
-            switch (this.options.editMode) {
+            switch (options.editMode) {
               // Edit mode always on
               case true:
                 this.startEditor();
@@ -371,10 +382,10 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'load',
           value: function load(path) {
-            var _this = this;
+            var _this2 = this;
 
             var appName = this.appName,
-                options = this.options;
+                debug = this.debug;
 
             return new Promise(function (resolve, reject) {
               if (!appName) {
@@ -382,18 +393,24 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
               }
 
               // Return cached version if available
-              var sectionContent = _this.content[path];
+              var sectionContent = _this2.content[path];
 
               if (sectionContent) {
-                options.log && console.info('from cache: ', path);
+                debug && console.info('from cache: ', path);
                 return resolve(sectionContent);
               }
 
               // No cached version; fetch from server
-              options.log && console.info('from server: ', path);
+              debug && console.info('from server: ', path);
 
-              var params = (0, _utils.encodeQueryString)(options);
-              var url = API_URL + '/apps/' + appName + '/content/' + path + '?' + params;
+              // Build request URL
+              var params = ['draft', 'lang'].reduce(function (memo, param) {
+                if (_this2[param]) memo[param] = _this2[param];
+
+                return memo;
+              }, {});
+
+              var url = API_URL + '/apps/' + appName + '/content/' + path + '?' + (0, _utils.encodeQueryString)(params);
 
               return fetch(url).then(function (res) {
                 return res.json();
@@ -408,7 +425,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
                 // Cache for next time
                 // TODO: Does this cause problems if future load() calls use nested paths e.g. main.subsection
-                _extends(_this.content, result);
+                _extends(_this2.content, result);
 
                 resolve(result);
               }).catch(function (err) {
@@ -427,10 +444,10 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'get',
           value: function get(path, backup) {
-            var options = this.options,
+            var draft = this.draft,
                 content = this.content;
 
-            if (options.draft) {
+            if (draft) {
               backup = typeof backup !== 'undefined' ? backup : '[' + path + ']';
             }
 
@@ -467,11 +484,12 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           key: 'startEditor',
           value: function startEditor() {
             var appName = this.appName,
-                options = this.options;
+                lang = this.lang;
 
             // Draft mode is always on if in edit mode
 
-            this.options.draft = true;
+            this.editMode = true;
+            this.draft = true;
 
             var script = document.createElement('script');
 
@@ -479,8 +497,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             script.async = true;
             script.setAttribute('data-app', appName);
 
-            if (options.lang) {
-              script.setAttribute('data-lang', options.lang);
+            if (lang) {
+              script.setAttribute('data-lang', lang);
             }
 
             document.getElementsByTagName('body')[0].appendChild(script);
@@ -525,7 +543,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
     /******/)
   );
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
 
 /***/ }),
 /* 1 */
@@ -659,7 +677,7 @@ var _wurdWeb = __webpack_require__(0);
 
 var _wurdWeb2 = _interopRequireDefault(_wurdWeb);
 
-var _marked = __webpack_require__(8);
+var _marked = __webpack_require__(9);
 
 var _marked2 = _interopRequireDefault(_marked);
 
@@ -715,6 +733,57 @@ var _wurdWeb = __webpack_require__(0);
 
 var _wurdWeb2 = _interopRequireDefault(_wurdWeb);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var WurdObject = function WurdObject(_ref) {
+  var id = _ref.id,
+      sid = _ref.sid,
+      _ref$type = _ref.type,
+      type = _ref$type === undefined ? 'span' : _ref$type,
+      keys = _ref.keys,
+      children = _ref.children,
+      rest = _objectWithoutProperties(_ref, ['id', 'sid', 'type', 'keys', 'children']);
+
+  // Only render Wurd wrapper in edit mode
+  if (!_wurdWeb2.default.editMode) return children;
+
+  // Normalise propNames to string in form prop1,prop2
+  if (Array.isArray(keys)) {
+    keys = keys.join(',');
+  }
+
+  return _react2.default.createElement(type, _extends({}, rest, {
+    'data-wurd-obj': sid || id,
+    'data-wurd-obj-props': keys
+  }), children);
+};
+
+exports.default = WurdObject;
+module.exports = exports['default'];
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _wurdWeb = __webpack_require__(0);
+
+var _wurdWeb2 = _interopRequireDefault(_wurdWeb);
+
 var _utils = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -747,7 +816,7 @@ exports.default = WurdText;
 module.exports = exports['default'];
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -756,13 +825,13 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.WurdMarkdown = exports.WurdList = exports.WurdImage = exports.WurdText = undefined;
+exports.WurdObject = exports.WurdMarkdown = exports.WurdList = exports.WurdImage = exports.WurdText = undefined;
 
 var _wurdWeb = __webpack_require__(0);
 
 var _wurdWeb2 = _interopRequireDefault(_wurdWeb);
 
-var _text = __webpack_require__(6);
+var _text = __webpack_require__(7);
 
 var _text2 = _interopRequireDefault(_text);
 
@@ -778,6 +847,10 @@ var _markdown = __webpack_require__(5);
 
 var _markdown2 = _interopRequireDefault(_markdown);
 
+var _object = __webpack_require__(6);
+
+var _object2 = _interopRequireDefault(_object);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _wurdWeb2.default;
@@ -785,9 +858,10 @@ exports.WurdText = _text2.default;
 exports.WurdImage = _image2.default;
 exports.WurdList = _list2.default;
 exports.WurdMarkdown = _markdown2.default;
+exports.WurdObject = _object2.default;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1976,10 +2050,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 }).call(function () {
   return this || (typeof window !== 'undefined' ? window : global);
 }());
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2009,7 +2083,7 @@ try {
 module.exports = g;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

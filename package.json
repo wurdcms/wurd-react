@@ -1,6 +1,6 @@
 {
   "name": "wurd-react",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "Components to easily integrate the Wurd CMS into your React app",
   "main": "dist/wurd.js",
   "scripts": {
@@ -39,7 +39,7 @@
   "license": "ISC",
   "dependencies": {
     "marked": "0.3.6",
-    "wurd-web": "3.1.0"
+    "wurd-web": "4.0.0"
   },
   "peerDependencies": {
     "react": "^15.0"

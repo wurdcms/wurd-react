@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
-import {WurdText, WurdImage, WurdList, WurdMarkdown} from '../../../dist/wurd';
-
-import Nav from './nav';
+import wurd, {WurdText, WurdImage, WurdList, WurdMarkdown, WurdObject} from '../../../dist/wurd';
 
 
 class App extends Component {
@@ -9,7 +7,11 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Nav />
+        <nav className="navbar navbar-default">
+          <ul className="nav navbar-nav">
+            <li><a href="/"><WurdText id="nav.home" /></a></li>
+          </ul>
+        </nav>
         
         <WurdImage id="home.heroImage" style={{objectFit: 'cover', width: '100%', height: 200}} />
 
@@ -32,6 +34,18 @@ class App extends Component {
           <WurdImage id=".image" width="75" />
           <WurdText id=".name" />
         </WurdList>
+
+
+        {/* Example of how to edit off-page or interactive elements such as dropdowns */}
+        {wurd.editMode &&
+          <WurdObject
+            id="home.meta"
+            keys="title,description"
+            style={{color: '#ccc'}}
+          >
+            [Metadata]
+          </WurdObject>
+        }
       </div>
     );
   }

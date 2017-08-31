@@ -4,7 +4,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import wurd, {WurdText} from '../../../dist/wurd'; // In your app this should require the `wurd-react` module
+import wurd from '../../../dist/wurd'; // In your app this should require the `wurd-react` module
 
 import App from './app';
 
@@ -12,6 +12,7 @@ import App from './app';
 //Connect to Wurd CMS
 wurd.connect('example', {
   editMode: 'querystring', //Add '?edit to the URL to trigger edit mode'
+  lang: 'en'
 });
 
 
@@ -20,5 +21,9 @@ wurd.connect('example', {
 wurd.load('home,nav')
   .catch(err => console.error(err))
   .then(content => {
+
     ReactDOM.render(<App />, document.getElementById('root'));
+
+    document.title = wurd.get('home.meta.title');
+
   });
