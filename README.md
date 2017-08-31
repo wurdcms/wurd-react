@@ -91,4 +91,18 @@ Any `WurdText`, `WurdItem` etc. children should be immediate children and use th
 
 
 ### WurdObject
-Todo
+Allows editing a section of content, (like the properties of an object).
+
+This editor is useful for:
+- Off-page content such as metadata
+- The content of complex page elements such as dropdowns, modals and popovers
+- Editing many properties at once
+
+```jsx
+<WurdObject
+  id="home.meta",          // Required
+  keys="title,description" //Required; will define with items can be edited
+  type="span",             // Defaults to `div`
+  // Other standard props (className, style etc.) can be passed too
+/>
+```
