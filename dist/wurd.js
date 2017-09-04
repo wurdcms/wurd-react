@@ -561,11 +561,23 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var replaceVars = exports.replaceVars = function replaceVars(text, vars) {
+/**
+ * Replaces {{mustache}} style placeholders in text with variables
+ *
+ * @param {String} text
+ * @param {Object} vars
+ *
+ * @return {String}
+ */
+var replaceVars = exports.replaceVars = function replaceVars(text) {
+  var vars = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  if (typeof text !== 'string') return text;
+
   Object.keys(vars).forEach(function (key) {
     var val = vars[key];
 
-    text = text.replace("{{" + key + "}}", val);
+    text = text.replace(new RegExp('{{' + key + '}}', 'g'), val);
   });
 
   return text;
