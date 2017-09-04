@@ -18,7 +18,7 @@ wurd.connect('example', {
 
 // Load initial content (e.g. app name, titles etc.)
 // Additional content can be loaded later as required; for example loading content by page
-wurd.load('home,nav')
+wurd.load('nav,home')
   .catch(err => console.error(err))
   .then(content => {
 

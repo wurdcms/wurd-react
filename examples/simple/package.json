@@ -11,6 +11,7 @@
     "marked": "^0.3.6",
     "prop-types": "^15.5.4",
     "react": "^15.5.4",
+    "react-bootstrap": "^0.31.2",
     "react-dom": "^15.5.4",
     "webpack": "^2.6.1"
   },
@@ -18,6 +19,9 @@
     "serve": "^5.2.4"
   },
   "babel": {
-    "presets": ["es2015", "react"]
+    "presets": [
+      "es2015",
+      "react"
+    ]
   }
 }

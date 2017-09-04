@@ -1,21 +1,19 @@
 import React, {Component} from 'react';
 import wurd, {WurdText, WurdImage, WurdList, WurdMarkdown, WurdObject} from '../../../dist/wurd';
 
+import Navbar from './navbar';
+
 
 class App extends Component {
 
   render() {
     return (
       <div>
-        <nav className="navbar navbar-default">
-          <ul className="nav navbar-nav">
-            <li><a href="/"><WurdText id="nav.home" /></a></li>
-          </ul>
-        </nav>
+        <Navbar />
         
         <WurdImage id="home.heroImage" style={{objectFit: 'cover', width: '100%', height: 200}} />
 
-        <h2><WurdText id="home.welcome.title" /></h2>
+        <WurdText type="h2" id="home.welcome.title" />
 
         <WurdText 
           id="home.welcome.intro" 
@@ -28,10 +26,16 @@ class App extends Component {
 
         <hr />
 
-        <h2><WurdText id="home.team.title" /></h2>
+        <WurdText type="h2" id="home.team.title" />
 
-        <WurdList id="home.team.members">
-          <WurdImage id=".image" width="75" />
+        <WurdList
+          id="home.team.members"
+          type="ul"
+          className="list-group"
+          itemType="li"
+          itemProps={{className: 'list-group-item'}}
+        >
+          <WurdImage id=".image" width="75" style={{marginRight: 20}} />
           <WurdText id=".name" />
         </WurdList>
 

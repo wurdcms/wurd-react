@@ -597,14 +597,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; } // eslint-disable-line no-unused-vars
 
 
-var WurdImage = function WurdImage(props) {
-  var id = props.id,
-      sid = props.sid,
-      rest = _objectWithoutProperties(props, ['id', 'sid']);
+var WurdImage = function WurdImage(_ref) {
+  var id = _ref.id,
+      sid = _ref.sid,
+      rest = _objectWithoutProperties(_ref, ['id', 'sid']);
 
   var url = _wurdWeb2.default.get(id);
 
-  return _react2.default.createElement('img', _extends({}, rest, { 'data-wurd-img': sid || id, src: url }));
+  var elProps = _extends({}, rest, {
+    src: url
+  });
+
+  if (_wurdWeb2.default.editMode) {
+    elProps['data-wurd-img'] = sid || id;
+  }
+
+  return _react2.default.createElement('img', elProps);
 };
 
 exports.default = WurdImage;
@@ -621,6 +629,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
@@ -631,24 +641,46 @@ var _wurdWeb2 = _interopRequireDefault(_wurdWeb);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 var WurdList = function WurdList(_ref) {
   var id = _ref.id,
-      children = _ref.children;
+      children = _ref.children,
+      _ref$type = _ref.type,
+      type = _ref$type === undefined ? 'ul' : _ref$type,
+      _ref$itemType = _ref.itemType,
+      itemType = _ref$itemType === undefined ? 'li' : _ref$itemType,
+      _ref$itemProps = _ref.itemProps,
+      itemProps = _ref$itemProps === undefined ? {} : _ref$itemProps,
+      rest = _objectWithoutProperties(_ref, ['id', 'children', 'type', 'itemType', 'itemProps']);
+
+  var elProps = _extends({}, rest);
+
+  if (_wurdWeb2.default.editMode) {
+    elProps['data-wurd-list'] = id;
+  };
 
   return _react2.default.createElement(
     'ul',
-    { 'data-wurd-list': id },
+    elProps,
     _wurdWeb2.default.map(id, function (item, itemId) {
-      return _react2.default.createElement(
-        'li',
-        { key: itemId, 'data-wurd-block': itemId },
-        _react2.default.Children.map(children, function (child) {
-          return _react2.default.cloneElement(child, {
-            id: [itemId, child.props.id].join(''),
-            sid: child.props.id
-          });
-        })
-      );
+
+      var customItemProps = {
+        key: itemId
+      };
+
+      if (_wurdWeb2.default.editMode) {
+        customItemProps['data-wurd-block'] = itemId;
+      }
+
+      var itemChildren = _react2.default.Children.map(children, function (child) {
+        return _react2.default.cloneElement(child, {
+          id: [itemId, child.props.id].join(''),
+          sid: child.props.id
+        });
+      });
+
+      return _react2.default.createElement(itemType, _extends({}, itemProps, customItemProps), itemChildren);
     })
   );
 };
@@ -695,18 +727,22 @@ var WurdMarkdown = function WurdMarkdown(_ref) {
       vars = _ref.vars,
       rest = _objectWithoutProperties(_ref, ['id', 'sid', 'type', 'vars']);
 
-  var text = _wurdWeb2.default.get(id);
+  var text = _wurdWeb2.default.get(id) || ''; // Prevent error from Markdown parser by always passing a string
 
-  // Prevent error from Markdown parser by always passing a string
-  text = text || '';
+  var elProps = _extends({}, rest, {
+    dangerouslySetInnerHTML: { __html: (0, _marked2.default)(text) }
+  });
 
   // Replace variables with {{mustache}} style tags
-  if (vars) text = (0, _utils.replaceVars)(text, vars);
+  if (vars) {
+    text = (0, _utils.replaceVars)(text, vars);
+  }
 
-  return _react2.default.createElement(type, _extends({}, rest, {
-    'data-wurd-md': sid || id,
-    'dangerouslySetInnerHTML': { __html: (0, _marked2.default)(text) }
-  }));
+  if (_wurdWeb2.default.editMode) {
+    elProps['data-wurd-md'] = sid || id;
+  }
+
+  return _react2.default.createElement(type, elProps);
 };
 
 exports.default = WurdMarkdown;
@@ -746,18 +782,19 @@ var WurdObject = function WurdObject(_ref) {
       children = _ref.children,
       rest = _objectWithoutProperties(_ref, ['id', 'sid', 'type', 'keys', 'children']);
 
-  // Only render Wurd wrapper in edit mode
-  if (!_wurdWeb2.default.editMode) return children;
+  var elProps = _extends({}, rest);
 
-  // Normalise propNames to string in form prop1,prop2
-  if (Array.isArray(keys)) {
-    keys = keys.join(',');
+  if (_wurdWeb2.default.editMode) {
+    // Normalise keys to string in form 'key1,key2'
+    if (Array.isArray(keys)) {
+      keys = keys.join(',');
+    }
+
+    elProps['data-wurd-obj'] = sid || id;
+    elProps['data-wurd-obj-props'] = keys;
   }
 
-  return _react2.default.createElement(type, _extends({}, rest, {
-    'data-wurd-obj': sid || id,
-    'data-wurd-obj-props': keys
-  }), children);
+  return _react2.default.createElement(type, elProps, children);
 };
 
 exports.default = WurdObject;
@@ -788,8 +825,6 @@ var _utils = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 var WurdText = function WurdText(_ref) {
@@ -801,15 +836,21 @@ var WurdText = function WurdText(_ref) {
       rest = _objectWithoutProperties(_ref, ['id', 'sid', 'type', 'vars']);
 
   var text = _wurdWeb2.default.get(id);
-  var editorType = 'data-wurd';
+
+  var elProps = _extends({}, rest);
 
   // Replace variables with {{mustache}} style tags
   if (vars) {
     text = (0, _utils.replaceVars)(text, vars);
-    editorType = 'data-wurd-md';
   }
 
-  return _react2.default.createElement(type, _extends({}, rest, _defineProperty({}, editorType, sid || id)), text);
+  if (_wurdWeb2.default.editMode) {
+    var editorType = vars ? 'data-wurd-md' : 'data-wurd';
+
+    elProps[editorType] = sid || id;
+  }
+
+  return _react2.default.createElement(type, elProps, text);
 };
 
 exports.default = WurdText;

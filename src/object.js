@@ -4,19 +4,19 @@ import wurd from 'wurd-web';
 
 const WurdObject = ({id, sid, type = 'span', keys, children, ...rest}) => {
 
-  // Only render Wurd wrapper in edit mode
-  if (!wurd.editMode) return children;
+  let elProps = { ...rest };
 
-  // Normalise propNames to string in form prop1,prop2
-  if (Array.isArray(keys)) {
-    keys = keys.join(',');
+  if (wurd.editMode) {
+    // Normalise keys to string in form 'key1,key2'
+    if (Array.isArray(keys)) {
+      keys = keys.join(',');
+    }
+
+    elProps['data-wurd-obj'] = sid || id;
+    elProps['data-wurd-obj-props'] = keys;
   }
 
-  return React.createElement(type, {
-    ...rest,
-    'data-wurd-obj': sid || id,
-    'data-wurd-obj-props': keys
-  }, children);
+  return React.createElement(type, elProps, children);
 
 };
 
