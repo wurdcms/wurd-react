@@ -741,14 +741,14 @@ var WurdMarkdown = function WurdMarkdown(_ref) {
 
   var text = _wurdWeb2.default.get(id) || ''; // Prevent error from Markdown parser by always passing a string
 
-  var elProps = _extends({}, rest, {
-    dangerouslySetInnerHTML: { __html: (0, _marked2.default)(text) }
-  });
-
   // Replace variables with {{mustache}} style tags
   if (vars) {
     text = (0, _utils.replaceVars)(text, vars);
   }
+
+  var elProps = _extends({}, rest, {
+    dangerouslySetInnerHTML: { __html: (0, _marked2.default)(text) }
+  });
 
   if (_wurdWeb2.default.editMode) {
     elProps['data-wurd-md'] = sid || id;

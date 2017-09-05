@@ -22,7 +22,7 @@ class App extends Component {
           vars={{name: 'John'}}
         />
 
-        <WurdMarkdown id="home.welcome.markdown" />
+        <WurdMarkdown id="home.welcome.markdown" vars={{date: (new Date()).toLocaleDateString()}} />
 
         <hr />
 
