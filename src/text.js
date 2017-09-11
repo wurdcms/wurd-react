@@ -1,18 +1,12 @@
 import React from 'react';
 import wurd from 'wurd-web';
-import {replaceVars} from './utils';
 
 
 const WurdText = ({id, sid, type = 'span', vars, ...rest}) => {
 
-  let text = wurd.get(id);
+  let text = wurd.text(id, vars);
 
   let elProps = { ...rest };
-
-  // Replace variables with {{mustache}} style tags
-  if (vars) {
-    text = replaceVars(text, vars);
-  }
 
   if (wurd.editMode) {
     let editorType = vars ? 'data-wurd-md' : 'data-wurd';

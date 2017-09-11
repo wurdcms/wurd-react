@@ -4,7 +4,7 @@ import wurd from 'wurd-web';
 
 const WurdImage = ({id, sid, ...rest}) => {
 
-  let url = wurd.get(id);
+  let url = wurd.text(id);
 
   let elProps = {
     ...rest,
@@ -16,6 +16,7 @@ const WurdImage = ({id, sid, ...rest}) => {
   }
 
   return <img {...elProps} />;
+
 };
 
 

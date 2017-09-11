@@ -24,6 +24,6 @@ wurd.load('nav,home')
 
     ReactDOM.render(<App />, document.getElementById('root'));
 
-    document.title = wurd.get('home.meta.title');
+    document.title = wurd.text('home.meta.title');
 
   });

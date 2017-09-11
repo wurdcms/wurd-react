@@ -14,8 +14,8 @@ const Navbar = (props) => (
 
       <WurdObject type="ul" className="nav navbar-nav navbar-right" id="nav.menu" keys="item1,item2">
         <NavDropdown id="navDropdown" title="Menu">
-          <MenuItem>{wurd.get('nav.menu.item1')}</MenuItem>
-          <MenuItem>{wurd.get('nav.menu.item2')}</MenuItem>
+          <MenuItem>{wurd.text('nav.menu.item1')}</MenuItem>
+          <MenuItem>{wurd.text('nav.menu.item2')}</MenuItem>
         </NavDropdown>
       </WurdObject>
     </div>

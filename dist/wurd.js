@@ -183,6 +183,11 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
+      /**
+       * @param {Object} data
+       *
+       * @return {String}
+       */
       var encodeQueryString = exports.encodeQueryString = function encodeQueryString(data) {
         var parts = Object.keys(data).map(function (key) {
           var value = data[key];
@@ -191,6 +196,28 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         });
 
         return parts.join('&');
+      };
+
+      /**
+       * Replaces {{mustache}} style placeholders in text with variables
+       *
+       * @param {String} text
+       * @param {Object} vars
+       *
+       * @return {String}
+       */
+      var replaceVars = exports.replaceVars = function replaceVars(text) {
+        var vars = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        if (typeof text !== 'string') return text;
+
+        Object.keys(vars).forEach(function (key) {
+          var val = vars[key];
+
+          text = text.replace(new RegExp('{{' + key + '}}', 'g'), val);
+        });
+
+        return text;
       };
 
       /***/
@@ -371,6 +398,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
               default:
                 break;
             }
+
+            return this;
           }
 
           /**
@@ -435,23 +464,54 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           }
 
           /**
-           * Gets a content item by path (e.g. `section.item`)
+           * Gets a content item by path (e.g. `section.item`).
+           * Will return both text and/or objects, depending on the contents of the item
            *
            * @param {String} path       Item path e.g. `section.item`
-           * @param {String} [backup]   Backup content to display if there is no item content
+           *
+           * @return {Mixed}
            */
 
         }, {
           key: 'get',
-          value: function get(path, backup) {
+          value: function get(path) {
+            return (0, _getPropertyValue2.default)(this.content, path);
+          }
+
+          /**
+           * Gets text content of an item by path (e.g. `section.item`).
+           * If the item is not a string, e.g. you have passed the path of an object,
+           * an empty string will be returned, unless in draft mode in which case a warning will be returned.
+           *
+           * @param {String} path       Item path e.g. `section.item`
+           * @param {Object} [vars]     Variables to replace in the text
+           *
+           * @return {Mixed}
+           */
+
+        }, {
+          key: 'text',
+          value: function text(path, vars) {
             var draft = this.draft,
                 content = this.content;
 
-            if (draft) {
-              backup = typeof backup !== 'undefined' ? backup : '[' + path + ']';
+            var text = (0, _getPropertyValue2.default)(content, path);
+
+            if (typeof text === 'undefined') {
+              return draft ? '[' + path + ']' : '';
             }
 
-            return (0, _getPropertyValue2.default)(content, path) || backup;
+            if (typeof text !== 'string') {
+              console.warn('Tried to get object as string: ' + path);
+
+              return draft ? '[' + path + ']' : '';
+            }
+
+            if (vars) {
+              text = (0, _utils.replaceVars)(text, vars);
+            }
+
+            return text;
           }
 
           /**
@@ -510,7 +570,11 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
       ;
 
-      exports.default = new Wurd();
+      var instance = new Wurd();
+
+      instance.Wurd = Wurd;
+
+      exports.default = instance;
       module.exports = exports['default'];
 
       /***/
@@ -552,38 +616,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Replaces {{mustache}} style placeholders in text with variables
- *
- * @param {String} text
- * @param {Object} vars
- *
- * @return {String}
- */
-var replaceVars = exports.replaceVars = function replaceVars(text) {
-  var vars = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  if (typeof text !== 'string') return text;
-
-  Object.keys(vars).forEach(function (key) {
-    var val = vars[key];
-
-    text = text.replace(new RegExp('{{' + key + '}}', 'g'), val);
-  });
-
-  return text;
-};
-
-/***/ }),
+/* 2 */,
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -614,7 +647,7 @@ var WurdImage = function WurdImage(_ref) {
       sid = _ref.sid,
       rest = _objectWithoutProperties(_ref, ['id', 'sid']);
 
-  var url = _wurdWeb2.default.get(id);
+  var url = _wurdWeb2.default.text(id);
 
   var elProps = _extends({}, rest, {
     src: url
@@ -725,8 +758,6 @@ var _marked = __webpack_require__(9);
 
 var _marked2 = _interopRequireDefault(_marked);
 
-var _utils = __webpack_require__(2);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -739,12 +770,7 @@ var WurdMarkdown = function WurdMarkdown(_ref) {
       vars = _ref.vars,
       rest = _objectWithoutProperties(_ref, ['id', 'sid', 'type', 'vars']);
 
-  var text = _wurdWeb2.default.get(id) || ''; // Prevent error from Markdown parser by always passing a string
-
-  // Replace variables with {{mustache}} style tags
-  if (vars) {
-    text = (0, _utils.replaceVars)(text, vars);
-  }
+  var text = _wurdWeb2.default.text(id, vars);
 
   var elProps = _extends({}, rest, {
     dangerouslySetInnerHTML: { __html: (0, _marked2.default)(text) }
@@ -833,8 +859,6 @@ var _wurdWeb = __webpack_require__(0);
 
 var _wurdWeb2 = _interopRequireDefault(_wurdWeb);
 
-var _utils = __webpack_require__(2);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -847,14 +871,9 @@ var WurdText = function WurdText(_ref) {
       vars = _ref.vars,
       rest = _objectWithoutProperties(_ref, ['id', 'sid', 'type', 'vars']);
 
-  var text = _wurdWeb2.default.get(id);
+  var text = _wurdWeb2.default.text(id, vars);
 
   var elProps = _extends({}, rest);
-
-  // Replace variables with {{mustache}} style tags
-  if (vars) {
-    text = (0, _utils.replaceVars)(text, vars);
-  }
 
   if (_wurdWeb2.default.editMode) {
     var editorType = vars ? 'data-wurd-md' : 'data-wurd';
