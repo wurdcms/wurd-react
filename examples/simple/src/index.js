@@ -22,8 +22,8 @@ wurd.load('nav,home')
   .catch(err => console.error(err))
   .then(content => {
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    document.title = content.text('home.meta.title');
 
-    document.title = wurd.text('home.meta.title');
+    ReactDOM.render(<App />, document.getElementById('root'));
 
   });

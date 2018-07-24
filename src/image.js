@@ -1,21 +1,20 @@
-import React from 'react'; // eslint-disable-line no-unused-vars
-import wurd from 'wurd-web';
+import React from 'react';
 
 
-const WurdImage = ({id, sid, ...rest}) => {
+const WurdImage = ({block, id, sid, ...rest}) => {
 
-  let url = wurd.text(id);
+  const url = block.text(id);
 
-  let elProps = {
+  const elProps = {
     ...rest,
     src: url
   };
 
-  if (wurd.editMode) {
-    elProps['data-wurd-img'] = sid || id;
+  if (block.editMode) {
+    elProps['data-wurd-img'] = block.id(sid || id);
   }
 
-  return <img {...elProps} />;
+  return React.createElement('img', elProps);
 
 };
 

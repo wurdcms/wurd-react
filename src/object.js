@@ -1,18 +1,17 @@
 import React from 'react';
-import wurd from 'wurd-web';
 
 
-const WurdObject = ({id, sid, type = 'span', keys, children, ...rest}) => {
+const WurdObject = ({block, id, sid, type = 'span', keys, children, ...rest}) => {
 
-  let elProps = { ...rest };
+  const elProps = { ...rest };
 
-  if (wurd.editMode) {
+  if (block.editMode) {
     // Normalise keys to string in form 'key1,key2'
     if (Array.isArray(keys)) {
       keys = keys.join(',');
     }
 
-    elProps['data-wurd-obj'] = sid || id;
+    elProps['data-wurd-obj'] = block.id(sid || id);
     elProps['data-wurd-obj-props'] = keys;
   }
 

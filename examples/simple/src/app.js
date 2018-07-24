@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import wurd, {WurdText, WurdImage, WurdList, WurdMarkdown, WurdObject} from '../../../dist/wurd';
+import wurd from '../../../dist/wurd';
 
 import Navbar from './navbar';
 
@@ -7,48 +7,59 @@ import Navbar from './navbar';
 class App extends Component {
 
   render() {
+    const page = wurd.content.block('home');
+
     return (
       <div>
-        <Navbar />
+        <Navbar 
+          /*
+          Here we pass a 'block' (subsection of content) to the child component so that 
+          it does not need to be aware of anything outside it's own scope.
+          This makes refactoring easier and makes content item IDs shorter to type.
+          */
+          content={wurd.content.block('nav')}
+        />
         
-        <WurdImage id="home.heroImage" style={{objectFit: 'cover', width: '100%', height: 200}} />
+        <page.Image id="heroImage" style={{objectFit: 'cover', width: '100%', height: 200}} />
 
-        <WurdText type="h2" id="home.welcome.title" />
+        <page.Text type="h2" id="welcome.title" />
 
-        <WurdText 
-          id="home.welcome.intro" 
+        <page.Text 
+          id="welcome.intro" 
           type="div"
           className="alert alert-info" 
           vars={{name: 'John'}}
         />
 
-        <WurdMarkdown id="home.welcome.markdown" vars={{date: (new Date()).toLocaleDateString()}} />
+        <page.Markdown id="welcome.markdown" vars={{date: (new Date()).toLocaleDateString()}} />
 
         <hr />
 
-        <WurdText type="h2" id="home.team.title" />
+        <page.Text type="h2" id="team.title" />
 
-        <WurdList
-          id="home.team.members"
+        <page.List
+          id="team.members"
           type="ul"
           className="list-group"
-          itemType="li"
-          itemProps={{className: 'list-group-item'}}
         >
-          <WurdImage id=".image" width="75" style={{marginRight: 20}} />
-          <WurdText id=".name" />
-        </WurdList>
+          {item => 
+            <li key={item.id()} className="list-group-item">
+              <item.Image id="image" width="75" style={{marginRight: 20}} />
+              <item.Text id="name" />
+            </li>
+          }
+        </page.List>
 
 
         {/* Example of how to edit off-page or interactive elements such as dropdowns */}
         {wurd.editMode &&
-          <WurdObject
-            id="home.meta"
+          <page.Object
+            id="meta"
             keys="title,description"
             style={{color: '#ccc'}}
           >
             [Metadata]
-          </WurdObject>
+          </page.Object>
         }
       </div>
     );

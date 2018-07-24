@@ -1,19 +1,17 @@
 import React from 'react';
-import wurd from 'wurd-web';
-import marked from 'marked';
 
 
-const WurdMarkdown = ({id, sid, type = 'div', vars, ...rest}) => {
+const WurdMarkdown = ({block, id, sid, type = 'div', vars, ...rest}) => {
 
-  let text = wurd.text(id, vars);
+  const text = block.markdown(id, vars);
 
-  let elProps = {
+  const elProps = {
     ...rest,
-    dangerouslySetInnerHTML: { __html: marked(text) }
+    dangerouslySetInnerHTML: { __html: text }
   };
 
-  if (wurd.editMode) {
-    elProps['data-wurd-md'] = sid || id;
+  if (block.editMode) {
+    elProps['data-wurd-md'] = block.id(sid || id);
   }
 
   return React.createElement(type, elProps);
