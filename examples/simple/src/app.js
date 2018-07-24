@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React from 'react';
 import wurd from '../../../dist/wurd';
 
 import Navbar from './navbar';
 
 
-class App extends Component {
+class App extends React.Component {
 
   render() {
     const page = wurd.content.block('home');
@@ -39,7 +39,7 @@ class App extends Component {
 
         <page.List
           id="team.members"
-          type="ul"
+          keys="name" // At least 1 item key name that will be used
           className="list-group"
         >
           {item => 

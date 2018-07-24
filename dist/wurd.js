@@ -7,7 +7,7 @@
 		exports["wurd"] = factory(require("react"));
 	else
 		root["wurd"] = factory(root["react"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_0__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,11 +73,247 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var WurdImage = function WurdImage(_ref) {
+  var block = _ref.block,
+      id = _ref.id,
+      sid = _ref.sid,
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid']);
+
+  var url = block.text(id);
+
+  var elProps = _extends({}, rest, {
+    src: url
+  });
+
+  if (block.editMode) {
+    elProps['data-wurd-img'] = block.id(sid || id);
+  }
+
+  return _react2.default.createElement('img', elProps);
+};
+
+exports.default = WurdImage;
+module.exports = exports['default'];
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var WurdList = function WurdList(_ref) {
+  var block = _ref.block,
+      id = _ref.id,
+      children = _ref.children,
+      _ref$type = _ref.type,
+      type = _ref$type === undefined ? 'ul' : _ref$type,
+      _ref$keys = _ref.keys,
+      keys = _ref$keys === undefined ? 'title' : _ref$keys,
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'children', 'type', 'keys']);
+
+  var elProps = _extends({}, rest);
+
+  if (block.editMode) {
+    elProps['data-wurd-list'] = block.id(id);
+    elProps['data-wurd-list-props'] = keys;
+  };
+
+  return _react2.default.createElement(type, elProps, block.map(id, function (item, itemId) {
+    return children(item, itemId);
+  }));
+};
+
+exports.default = WurdList;
+module.exports = exports['default'];
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var WurdMarkdown = function WurdMarkdown(_ref) {
+  var block = _ref.block,
+      id = _ref.id,
+      sid = _ref.sid,
+      _ref$type = _ref.type,
+      type = _ref$type === undefined ? 'div' : _ref$type,
+      vars = _ref.vars,
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'vars']);
+
+  var text = block.markdown(id, vars);
+
+  var elProps = _extends({}, rest, {
+    dangerouslySetInnerHTML: { __html: text }
+  });
+
+  if (block.editMode) {
+    elProps['data-wurd-md'] = block.id(sid || id);
+  }
+
+  return _react2.default.createElement(type, elProps);
+};
+
+exports.default = WurdMarkdown;
+module.exports = exports['default'];
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var WurdObject = function WurdObject(_ref) {
+  var block = _ref.block,
+      id = _ref.id,
+      sid = _ref.sid,
+      _ref$type = _ref.type,
+      type = _ref$type === undefined ? 'span' : _ref$type,
+      keys = _ref.keys,
+      children = _ref.children,
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'keys', 'children']);
+
+  var elProps = _extends({}, rest);
+
+  if (block.editMode) {
+    // Normalise keys to string in form 'key1,key2'
+    if (Array.isArray(keys)) {
+      keys = keys.join(',');
+    }
+
+    elProps['data-wurd-obj'] = block.id(sid || id);
+    elProps['data-wurd-obj-props'] = keys;
+  }
+
+  return _react2.default.createElement(type, elProps, children);
+};
+
+exports.default = WurdObject;
+module.exports = exports['default'];
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var WurdText = function WurdText(_ref) {
+  var block = _ref.block,
+      id = _ref.id,
+      sid = _ref.sid,
+      _ref$type = _ref.type,
+      type = _ref$type === undefined ? 'span' : _ref$type,
+      vars = _ref.vars,
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'vars']);
+
+  var text = block.text(id, vars);
+
+  var elProps = _extends({}, rest);
+
+  if (block.editMode) {
+    var editorType = vars ? 'data-wurd-md' : 'data-wurd';
+
+    elProps[editorType] = block.id(sid || id);
+  }
+
+  return _react2.default.createElement(type, elProps, text);
+};
+
+exports.default = WurdText;
+module.exports = exports['default'];
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -576,7 +812,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           this.content = new _block2.default(null, null, this.rawContent, {
             lang: this.lang,
             editMode: this.editMode,
-            draft: this.draft
+            draft: this.draft,
+            blockHelpers: this.blockHelpers
           });
         }
 
@@ -719,7 +956,6 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'setBlockHelpers',
           value: function setBlockHelpers(helpers) {
-            console.log(helpers);
             this.blockHelpers = helpers;
           }
         }]);
@@ -2229,244 +2465,10 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
     /******/)
   );
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)(module)))
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
-
-/***/ }),
-/* 2 */,
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var WurdImage = function WurdImage(_ref) {
-  var block = _ref.block,
-      id = _ref.id,
-      sid = _ref.sid,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid']);
-
-  var url = block.text(id);
-
-  var elProps = _extends({}, rest, {
-    src: url
-  });
-
-  if (block.editMode) {
-    elProps['data-wurd-img'] = block.id(sid || id);
-  }
-
-  return _react2.default.createElement('img', elProps);
-};
-
-exports.default = WurdImage;
-module.exports = exports['default'];
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var WurdList = function WurdList(_ref) {
-  var block = _ref.block,
-      id = _ref.id,
-      children = _ref.children,
-      _ref$type = _ref.type,
-      type = _ref$type === undefined ? 'ul' : _ref$type,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'children', 'type']);
-
-  var elProps = _extends({}, rest);
-
-  if (block.editMode) {
-    elProps['data-wurd-list'] = block.id(id);
-  };
-
-  return _react2.default.createElement(type, elProps, block.map(id, function (item, itemId) {
-    return children(item, itemId);
-  }));
-};
-
-exports.default = WurdList;
-module.exports = exports['default'];
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var WurdMarkdown = function WurdMarkdown(_ref) {
-  var block = _ref.block,
-      id = _ref.id,
-      sid = _ref.sid,
-      _ref$type = _ref.type,
-      type = _ref$type === undefined ? 'div' : _ref$type,
-      vars = _ref.vars,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'vars']);
-
-  var text = block.markdown(id, vars);
-
-  var elProps = _extends({}, rest, {
-    dangerouslySetInnerHTML: { __html: text }
-  });
-
-  if (block.editMode) {
-    elProps['data-wurd-md'] = block.id(sid || id);
-  }
-
-  return _react2.default.createElement(type, elProps);
-};
-
-exports.default = WurdMarkdown;
-module.exports = exports['default'];
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var WurdObject = function WurdObject(_ref) {
-  var block = _ref.block,
-      id = _ref.id,
-      sid = _ref.sid,
-      _ref$type = _ref.type,
-      type = _ref$type === undefined ? 'span' : _ref$type,
-      keys = _ref.keys,
-      children = _ref.children,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'keys', 'children']);
-
-  var elProps = _extends({}, rest);
-
-  if (block.editMode) {
-    // Normalise keys to string in form 'key1,key2'
-    if (Array.isArray(keys)) {
-      keys = keys.join(',');
-    }
-
-    elProps['data-wurd-obj'] = block.id(sid || id);
-    elProps['data-wurd-obj-props'] = keys;
-  }
-
-  return _react2.default.createElement(type, elProps, children);
-};
-
-exports.default = WurdObject;
-module.exports = exports['default'];
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)(module)))
 
 /***/ }),
 /* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var WurdText = function WurdText(_ref) {
-  var block = _ref.block,
-      id = _ref.id,
-      sid = _ref.sid,
-      _ref$type = _ref.type,
-      type = _ref$type === undefined ? 'span' : _ref$type,
-      vars = _ref.vars,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'vars']);
-
-  var text = block.text(id, vars);
-
-  var elProps = _extends({}, rest);
-
-  if (block.editMode) {
-    var editorType = vars ? 'data-wurd-md' : 'data-wurd';
-
-    elProps[editorType] = block.id(sid || id);
-  }
-
-  return _react2.default.createElement(type, elProps, text);
-};
-
-exports.default = WurdText;
-module.exports = exports['default'];
-
-/***/ }),
-/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2479,31 +2481,31 @@ exports.WurdObject = exports.WurdList = exports.WurdImage = exports.WurdMarkdown
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _react = __webpack_require__(1);
+var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _wurdWeb = __webpack_require__(0);
+var _wurdWeb = __webpack_require__(6);
 
 var _wurdWeb2 = _interopRequireDefault(_wurdWeb);
 
-var _text = __webpack_require__(7);
+var _text = __webpack_require__(5);
 
 var _text2 = _interopRequireDefault(_text);
 
-var _markdown = __webpack_require__(5);
+var _markdown = __webpack_require__(3);
 
 var _markdown2 = _interopRequireDefault(_markdown);
 
-var _image = __webpack_require__(3);
+var _image = __webpack_require__(1);
 
 var _image2 = _interopRequireDefault(_image);
 
-var _list = __webpack_require__(4);
+var _list = __webpack_require__(2);
 
 var _list2 = _interopRequireDefault(_list);
 
-var _object = __webpack_require__(6);
+var _object = __webpack_require__(4);
 
 var _object2 = _interopRequireDefault(_object);
 
@@ -2537,7 +2539,7 @@ exports.WurdList = _list2.default;
 exports.WurdObject = _object2.default;
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
