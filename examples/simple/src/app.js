@@ -1,5 +1,5 @@
 import React from 'react';
-import wurd from '../../../dist/wurd';
+import wurd, {WurdText} from '../../../dist/wurd';
 
 import Navbar from './navbar';
 

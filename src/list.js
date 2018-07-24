@@ -1,7 +1,10 @@
 import React from 'react';
+import wurd from 'wurd-web';
 
 
 const WurdList = ({block, id, children, type = 'ul', keys = 'title', ...rest}) => {
+
+  block = block || wurd.content;
 
   const elProps = { ...rest };
 

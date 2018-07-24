@@ -1,7 +1,10 @@
 import React from 'react';
+import wurd from 'wurd-web';
 
 
 const WurdMarkdown = ({block, id, sid, type = 'div', vars, ...rest}) => {
+
+  block = block || wurd.content;
 
   const text = block.markdown(id, vars);
 

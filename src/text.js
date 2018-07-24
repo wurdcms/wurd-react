@@ -1,7 +1,10 @@
 import React from 'react';
+import wurd from 'wurd-web';
 
 
 const WurdText = ({block, id, sid, type = 'span', vars, ...rest}) => {
+
+  block = block || wurd.content;
 
   const text = block.text(id, vars);
 
