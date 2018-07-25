@@ -756,13 +756,6 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 // TODO: Does this cause problems if future load() calls use nested paths e.g. main.subsection
                 store.setSections(result);
 
-                _this3.content = new _block2.default(appName, null, _this3.rawContent, {
-                  lang: _this3.lang,
-                  editMode: _this3.editMode,
-                  draft: _this3.draft,
-                  blockHelpers: _this3.blockHelpers
-                });
-
                 resolve(_this3.content);
               }).catch(function (err) {
                 return reject(err);
