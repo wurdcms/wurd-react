@@ -170,7 +170,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
       /******/__webpack_require__.p = "";
       /******/
       /******/ // Load entry module and return exports
-      /******/return __webpack_require__(__webpack_require__.s = 3);
+      /******/return __webpack_require__(__webpack_require__.s = 4);
       /******/
     }(
     /************************************************************************/
@@ -251,14 +251,13 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }
       }
 
-      var marked = __webpack_require__(6);
-      var getValue = __webpack_require__(4);
+      var marked = __webpack_require__(7);
 
       var _require = __webpack_require__(0),
           replaceVars = _require.replaceVars;
 
       module.exports = function () {
-        function Block(app, path, rawContent) {
+        function Block(app, path, store) {
           var _this = this;
 
           var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
@@ -267,7 +266,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
           this.app = app;
           this.path = path;
-          this.rawContent = rawContent;
+          this.store = store;
           this.options = options;
 
           this.lang = options.lang;
@@ -323,14 +322,13 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'get',
           value: function get(path) {
-            var result = getValue(this.rawContent, path);
+            var result = this.store.get(path);
 
             // If an item is missing, check that the section has been loaded
             if (typeof result === 'undefined' && this.draft) {
               var section = path.split('.')[0];
-              var loadedSections = Object.keys(this.rawContent);
 
-              if (!loadedSections.includes(section)) {
+              if (!this.store.get(section)) {
                 console.warn('Tried to access unloaded section: ' + section);
               }
             }
@@ -432,9 +430,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           key: 'block',
           value: function block(path, fn) {
             var blockPath = this.id(path);
-            var blockContent = this.get(path);
 
-            var childBlock = new Block(this.app, blockPath, blockContent, this.options);
+            var childBlock = new Block(this.app, blockPath, this.store, this.options);
 
             if (typeof fn === 'function') {
               return fn.call(undefined, childBlock);
@@ -490,6 +487,80 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
     /***/function (module, exports, __webpack_require__) {
 
       "use strict";
+
+      var _extends = Object.assign || function (target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
+        }return target;
+      };
+
+      var _createClass = function () {
+        function defineProperties(target, props) {
+          for (var i = 0; i < props.length; i++) {
+            var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+          }
+        }return function (Constructor, protoProps, staticProps) {
+          if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+        };
+      }();
+
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+          throw new TypeError("Cannot call a class as a function");
+        }
+      }
+
+      var getValue = __webpack_require__(5);
+
+      module.exports = function () {
+
+        /**
+         * @param {Object} rawContent       Initial content
+         */
+        function Store() {
+          var rawContent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+          _classCallCheck(this, Store);
+
+          this.rawContent = rawContent;
+        }
+
+        /**
+         * @param {String} path
+         *
+         * @return {Mixed}
+         */
+
+        _createClass(Store, [{
+          key: 'get',
+          value: function get(path) {
+            return getValue(this.rawContent, path);
+          }
+
+          /**
+           * @param {Object} sections       Top level sections of content
+           */
+
+        }, {
+          key: 'setSections',
+          value: function setSections(sections) {
+            _extends(this.rawContent, sections);
+          }
+        }]);
+
+        return Store;
+      }();
+
+      /***/
+    },
+    /* 3 */
+    /***/function (module, exports, __webpack_require__) {
+
+      "use strict";
       /*
       eslint
       no-multi-spaces: ["error", {exceptions: {"VariableDeclarator": true}}]
@@ -515,7 +586,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
       /***/
     },
-    /* 3 */
+    /* 4 */
     /***/function (module, exports, __webpack_require__) {
 
       "use strict";
@@ -523,16 +594,6 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
-
-      var _extends = Object.assign || function (target) {
-        for (var i = 1; i < arguments.length; i++) {
-          var source = arguments[i];for (var key in source) {
-            if (Object.prototype.hasOwnProperty.call(source, key)) {
-              target[key] = source[key];
-            }
-          }
-        }return target;
-      };
 
       var _createClass = function () {
         function defineProperties(target, props) {
@@ -545,6 +606,10 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
       }();
 
       var _utils = __webpack_require__(0);
+
+      var _store = __webpack_require__(2);
+
+      var _store2 = _interopRequireDefault(_store);
 
       var _block = __webpack_require__(1);
 
@@ -573,9 +638,9 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           this.draft = false;
           this.editMode = false;
 
-          this.rawContent = {};
+          this.store = new _store2.default();
 
-          this.content = new _block2.default(null, null, this.rawContent, {
+          this.content = new _block2.default(null, null, this.store, {
             lang: this.lang,
             editMode: this.editMode,
             draft: this.draft,
@@ -648,6 +713,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             var _this3 = this;
 
             var appName = this.appName,
+                store = this.store,
                 debug = this.debug;
 
             return new Promise(function (resolve, reject) {
@@ -656,7 +722,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
               }
 
               // Return cached version if available
-              var sectionContent = _this3.rawContent[path];
+              var sectionContent = store.get(path);
 
               if (sectionContent) {
                 debug && console.info('from cache: ', path);
@@ -688,7 +754,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
                 // Cache for next time
                 // TODO: Does this cause problems if future load() calls use nested paths e.g. main.subsection
-                _extends(_this3.rawContent, result);
+                store.setSections(result);
 
                 _this3.content = new _block2.default(appName, null, _this3.rawContent, {
                   lang: _this3.lang,
@@ -747,7 +813,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
       /***/
     },
-    /* 4 */
+    /* 5 */
     /***/function (module, exports, __webpack_require__) {
 
       "use strict";
@@ -758,8 +824,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
       max-len: ["error", 80]
       */
 
-      var isObject = __webpack_require__(5);
-      var some = __webpack_require__(2);
+      var isObject = __webpack_require__(6);
+      var some = __webpack_require__(3);
 
       module.exports = getPropertyValue;
 
@@ -784,7 +850,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
       /***/
     },
-    /* 5 */
+    /* 6 */
     /***/function (module, exports, __webpack_require__) {
 
       "use strict";
@@ -809,7 +875,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
       /***/
     },
-    /* 6 */
+    /* 7 */
     /***/function (module, exports, __webpack_require__) {
 
       "use strict";
@@ -2197,11 +2263,11 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           }
         })(undefined || (typeof window !== 'undefined' ? window : global));
         /* WEBPACK VAR INJECTION */
-      }).call(exports, __webpack_require__(7));
+      }).call(exports, __webpack_require__(8));
 
       /***/
     },
-    /* 7 */
+    /* 8 */
     /***/function (module, exports, __webpack_require__) {
 
       "use strict";
