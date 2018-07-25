@@ -274,7 +274,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           this.draft = options.draft;
 
           // Ensure this is bound properly, required for when using object destructuring
-          // E.g. wurd.with('user', ({text}) => text('age'));
+          // E.g. wurd.block('user', ({text}) => text('age'));
           this.id = this.id.bind(this);
           this.get = this.get.bind(this);
           this.text = this.text.bind(this);
@@ -322,7 +322,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'get',
           value: function get(path) {
-            var result = this.store.get(path);
+            var result = this.store.get(this.id(path));
 
             // If an item is missing, check that the section has been loaded
             if (typeof result === 'undefined' && this.draft) {
@@ -630,44 +630,41 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
       var Wurd = function () {
         function Wurd() {
-          var _this = this;
-
           _classCallCheck(this, Wurd);
-
-          this.appName = null;
-          this.draft = false;
-          this.editMode = false;
-
-          this.store = new _store2.default();
-
-          this.content = new _block2.default(null, null, this.store, {
-            lang: this.lang,
-            editMode: this.editMode,
-            draft: this.draft,
-            blockHelpers: this.blockHelpers
-          });
-
-          // Add shortcut methods for fetching content e.g. wurd.get(), wurd.text()
-          ['id', 'get', 'text', 'markdown', 'map', 'block', 'el'].forEach(function (name) {
-            _this[name] = function () {
-              return this.content[name].apply(this.content, arguments);
-            }.bind(_this);
-          });
         }
-
-        /**
-         * Sets up the default connection/instance
-         *
-         * @param {String} appName
-         * @param {Object} [options]
-         * @param {Boolean|String} [options.editMode]   Options for enabling edit mode: `true` or `'querystring'`
-         * @param {Boolean} [options.draft]             If true, loads draft content; otherwise loads published content
-         */
 
         _createClass(Wurd, [{
           key: 'connect',
+
+          /*
+          constructor() {
+            this.appName = null;
+            this.draft = false;
+            this.editMode = false;
+             this.store = new Store();
+             this.content = new Block(null, null, this.store, {
+              lang: this.lang,
+              editMode: this.editMode,
+              draft: this.draft
+            });
+             // Add shortcut methods for fetching content e.g. wurd.get(), wurd.text()
+            ['id', 'get', 'text', 'markdown', 'map', 'block', 'el'].forEach(name => {
+              this[name] = function() {
+                return this.content[name].apply(this.content, arguments);
+              }.bind(this);
+            });
+          }*/
+
+          /**
+           * Sets up the default connection/instance
+           *
+           * @param {String} appName
+           * @param {Object} [options]
+           * @param {Boolean|String} [options.editMode]   Options for enabling edit mode: `true` or `'querystring'`
+           * @param {Boolean} [options.draft]             If true, loads draft content; otherwise loads published content
+           */
           value: function connect(appName) {
-            var _this2 = this;
+            var _this = this;
 
             var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -677,7 +674,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             ['draft', 'lang', 'debug'].forEach(function (name) {
               var val = options[name];
 
-              if (typeof val !== 'undefined') _this2[name] = val;
+              if (typeof val !== 'undefined') _this[name] = val;
             });
 
             // Activate edit mode if required
@@ -698,6 +695,23 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 break;
             }
 
+            // Finish setup
+            this.store = new _store2.default();
+
+            this.content = new _block2.default(null, null, this.store, {
+              lang: this.lang,
+              editMode: this.editMode,
+              draft: this.draft,
+              blockHelpers: this.blockHelpers
+            });
+
+            // Add shortcut methods for fetching content e.g. wurd.get(), wurd.text()
+            ['id', 'get', 'text', 'markdown', 'map', 'block', 'el'].forEach(function (name) {
+              _this[name] = function () {
+                return this.content[name].apply(this.content, arguments);
+              }.bind(_this);
+            });
+
             return this;
           }
 
@@ -710,7 +724,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'load',
           value: function load(path) {
-            var _this3 = this;
+            var _this2 = this;
 
             var appName = this.appName,
                 store = this.store,
@@ -734,7 +748,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
               // Build request URL
               var params = ['draft', 'lang'].reduce(function (memo, param) {
-                if (_this3[param]) memo[param] = _this3[param];
+                if (_this2[param]) memo[param] = _this2[param];
 
                 return memo;
               }, {});
@@ -756,7 +770,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 // TODO: Does this cause problems if future load() calls use nested paths e.g. main.subsection
                 store.setSections(result);
 
-                resolve(_this3.content);
+                resolve(_this2.content);
               }).catch(function (err) {
                 return reject(err);
               });
