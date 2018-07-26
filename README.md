@@ -6,12 +6,27 @@ Wurd is a service that lets you integrate a CMS into any website or app in minut
 ```jsx
 import wurd, {WurdText} from 'wurd-react';
 
-wurd.connect('myApp');
+wurd.connect('my-app', {
+  editMode: true
+});
 
-wurd.load('main,homepage')
-  .then(() => {
+wurd.load('shared,homepage')
+  .then(content => {
+    //Access content via getters
+    document.title = content.text('homepage.title');
+
+    //Use blocks for accessing subsections of content
+    const page = content.block('homepage');
+
     ReactDOM.render(
-      <WurdText id="main.title"/>, 
+      <div>
+        <h1><content.Text id="shared.company" /></h1>
+
+        <h2><page.Text id="title" /></h2>
+
+        <page.Image id="hero.image" width="300" />
+        <page.Text id="hero.title" />
+      </div>, 
       document.getElementById('root')
     );
   });
@@ -40,8 +55,8 @@ Creates an editable text region.
 ![WurdText example](https://wurdcms.github.io/images/text-vars.gif)
 
 ```jsx
-<WurdText
-  id="section.itemId",    // Required
+<content.Text
+  id="title",             // Required
   type="h1",              // Defaults to `span` 
   vars={{name: 'John'}},  // Replaces mustache style tokens (e.g. `{{name}}`) with the given data
   // Other standard props (className, style etc.) can be passed too
@@ -54,8 +69,8 @@ Creates an editable image (`<img>`).
 ![WurdImage example](https://wurdcms.github.io/images/image.gif)
 
 ```jsx
-<WurdImage
-  id="section.itemId",     //Required
+<content.Image
+  id="hero.image",     //Required
   // Other standard props (className, style etc.) can be passed too
 />
 ```
@@ -68,8 +83,8 @@ NOTE: This uses dangerouslySetInnerHTML, [read up on it here](https://facebook.g
 ![WurdMarkdown example](https://wurdcms.github.io/images/markdown.gif)
 
 ```jsx
-<WurdMarkdown
-  id="section.itemId",    // Required
+<content.Markdown
+  id="home.intro",        // Required
   type="div",             // Defaults to `div`
   vars={{name: 'John'}},  // Replaces mustache style tokens (e.g. `{{name}}`) with the given data
   // Other standard props (className, style etc.) can be passed too
@@ -79,14 +94,17 @@ NOTE: This uses dangerouslySetInnerHTML, [read up on it here](https://facebook.g
 ### WurdList
 Creates an editable list of content. The children passed will represent an item in the list.
 
-Any `WurdText`, `WurdItem` etc. children should be immediate children and use the `.itemId` notation (not the full item ID. Note the use of `.image` instead of `section.listId.${itemId}.image`:
 ```jsx
-<WurdList 
-  id="section.listId"     //Required
+<content.List 
+  id="team.members"       //Required
 >
-  <WurdImage id=".image"/>
-  <WurdText id=".name" />
-</WurdList>
+  {item => 
+    <li key={item.id()}>
+      <item.Image id="pic" width="50" />
+      <item.Text id="name" />
+    </li>
+  }
+</content.List>
 ```
 
 
@@ -99,9 +117,9 @@ This editor is useful for:
 - Editing many properties at once
 
 ```jsx
-<WurdObject
-  id="home.meta",          // Required
-  keys="title,description" //Required; will define with items can be edited
+<content.Object
+  id="meta",
+  keys="title,description" // Required; will define with items can be edited
   type="span",             // Defaults to `div`
   // Other standard props (className, style etc.) can be passed too
 />

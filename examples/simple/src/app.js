@@ -8,7 +8,6 @@ class App extends React.Component {
 
   render() {
     const page = wurd.block('home');
-    console.log(page);
 
     return (
       <div>

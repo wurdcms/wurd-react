@@ -19,9 +19,9 @@ wurd.connect('example', {
 // Additional content can be loaded later as required; for example loading content by page
 wurd.load('nav,home')
   .catch(err => console.error(err))
-  .then(cms => {
+  .then(content => {
 
-    document.title = cms.text('home.meta.title');
+    document.title = content.text('home.meta.title');
 
     ReactDOM.render(<App />, document.getElementById('root'));
 
