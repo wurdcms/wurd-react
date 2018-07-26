@@ -8,7 +8,7 @@ const WurdObject = ({block, id, sid, type = 'span', keys, children, ...rest}) =>
 
   const elProps = { ...rest };
 
-  if (block.editMode) {
+  if (wurd.editMode) {
     // Normalise keys to string in form 'key1,key2'
     if (Array.isArray(keys)) {
       keys = keys.join(',');

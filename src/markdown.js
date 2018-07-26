@@ -13,7 +13,7 @@ const WurdMarkdown = ({block, id, sid, type = 'div', vars, ...rest}) => {
     dangerouslySetInnerHTML: { __html: text }
   };
 
-  if (block.editMode) {
+  if (wurd.editMode) {
     elProps['data-wurd-md'] = block.id(sid || id);
   }
 

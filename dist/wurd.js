@@ -257,37 +257,26 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           replaceVars = _require.replaceVars;
 
       module.exports = function () {
-        function Block(app, path, store) {
+        function Block(wurd, path) {
           var _this = this;
-
-          var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
           _classCallCheck(this, Block);
 
-          this.app = app;
+          this.wurd = wurd;
+          this.getValue = wurd.store.get.bind(wurd.store);
           this.path = path;
-          this.store = store;
-          this.options = options;
-
-          this.lang = options.lang;
-          this.editMode = options.editMode;
-          this.draft = options.draft;
 
           // Ensure this is bound properly, required for when using object destructuring
           // E.g. wurd.block('user', ({text}) => text('age'));
-          this.id = this.id.bind(this);
-          this.get = this.get.bind(this);
-          this.text = this.text.bind(this);
-          this.map = this.map.bind(this);
-          this.block = this.block.bind(this);
-          this.markdown = this.markdown.bind(this);
-          this.el = this.el.bind(this);
+          ['id', 'get', 'text', 'map', 'block', 'markdown', 'el'].forEach(function (name) {
+            _this[name] = _this[name].bind(_this);
+          });
 
           // Add helper functions to the block for convenience.
           // These are bound to the block for access to this.text(), this.get() etc.
-          if (options.blockHelpers) {
-            Object.keys(options.blockHelpers).forEach(function (key) {
-              var fn = options.blockHelpers[key];
+          if (wurd.blockHelpers) {
+            Object.keys(wurd.blockHelpers).forEach(function (key) {
+              var fn = wurd.blockHelpers[key];
 
               _this[key] = fn.bind(_this);
             });
@@ -322,13 +311,13 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'get',
           value: function get(path) {
-            var result = this.store.get(this.id(path));
+            var result = this.getValue(this.id(path));
 
             // If an item is missing, check that the section has been loaded
-            if (typeof result === 'undefined' && this.draft) {
+            if (typeof result === 'undefined' && this.wurd.draft) {
               var section = path.split('.')[0];
 
-              if (!this.store.get(section)) {
+              if (!this.getValue(section)) {
                 console.warn('Tried to access unloaded section: ' + section);
               }
             }
@@ -353,13 +342,13 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             var text = this.get(path);
 
             if (typeof text === 'undefined') {
-              return this.draft ? '[' + path + ']' : '';
+              return this.wurd.draft ? '[' + path + ']' : '';
             }
 
             if (typeof text !== 'string') {
               console.warn('Tried to get object as string: ' + path);
 
-              return this.draft ? '[' + path + ']' : '';
+              return this.wurd.draft ? '[' + path + ']' : '';
             }
 
             if (vars) {
@@ -431,7 +420,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           value: function block(path, fn) {
             var blockPath = this.id(path);
 
-            var childBlock = new Block(this.app, blockPath, this.store, this.options);
+            var childBlock = new Block(this.wurd, blockPath);
 
             if (typeof fn === 'function') {
               return fn.call(undefined, childBlock);
@@ -466,7 +455,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             var text = options.markdown ? this.markdown(path, vars) : this.text(path, vars);
             var editor = vars || options.markdown ? 'data-wurd-md' : 'data-wurd';
 
-            if (this.draft) {
+            if (this.wurd.draft) {
               var type = options.type || 'span';
 
               if (options.markdown) type = 'div';
@@ -629,46 +618,36 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
       var API_URL = 'https://api-v3.wurd.io';
 
       var Wurd = function () {
-        function Wurd() {
+        function Wurd(appName, options) {
           _classCallCheck(this, Wurd);
+
+          if (appName) {
+            this.connect(appName, options);
+          }
         }
+
+        /**
+         * Sets up the default connection/instance
+         *
+         * @param {String} appName
+         * @param {Object} [options]
+         * @param {Boolean|String} [options.editMode]   Options for enabling edit mode: `true` or `'querystring'`
+         * @param {Boolean} [options.draft]             If true, loads draft content; otherwise loads published content
+         * @param {Object} [options.blockHelpers]       Functions to help accessing content and creating editable regions
+         * @param {Object} [options.rawContent]         Content to populate the store with
+         */
 
         _createClass(Wurd, [{
           key: 'connect',
-
-          /*
-          constructor() {
-            this.appName = null;
-            this.draft = false;
-            this.editMode = false;
-             this.store = new Store();
-             this.content = new Block(null, null, this.store, {
-              lang: this.lang,
-              editMode: this.editMode,
-              draft: this.draft
-            });
-             // Add shortcut methods for fetching content e.g. wurd.get(), wurd.text()
-            ['id', 'get', 'text', 'markdown', 'map', 'block', 'el'].forEach(name => {
-              this[name] = function() {
-                return this.content[name].apply(this.content, arguments);
-              }.bind(this);
-            });
-          }*/
-
-          /**
-           * Sets up the default connection/instance
-           *
-           * @param {String} appName
-           * @param {Object} [options]
-           * @param {Boolean|String} [options.editMode]   Options for enabling edit mode: `true` or `'querystring'`
-           * @param {Boolean} [options.draft]             If true, loads draft content; otherwise loads published content
-           */
           value: function connect(appName) {
             var _this = this;
 
             var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-            this.appName = appName;
+            this.app = appName;
+
+            this.draft = false;
+            this.editMode = false;
 
             // Set allowed options
             ['draft', 'lang', 'debug'].forEach(function (name) {
@@ -696,14 +675,13 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             }
 
             // Finish setup
-            this.store = new _store2.default();
+            this.store = new _store2.default(options.rawContent || {});
 
-            this.content = new _block2.default(null, null, this.store, {
-              lang: this.lang,
-              editMode: this.editMode,
-              draft: this.draft,
-              blockHelpers: this.blockHelpers
-            });
+            if (options.blockHelpers) {
+              this.setBlockHelpers(options.blockHelpers);
+            }
+
+            this.content = new _block2.default(this, null);
 
             // Add shortcut methods for fetching content e.g. wurd.get(), wurd.text()
             ['id', 'get', 'text', 'markdown', 'map', 'block', 'el'].forEach(function (name) {
@@ -726,12 +704,12 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           value: function load(path) {
             var _this2 = this;
 
-            var appName = this.appName,
+            var app = this.app,
                 store = this.store,
                 debug = this.debug;
 
             return new Promise(function (resolve, reject) {
-              if (!appName) {
+              if (!app) {
                 return reject(new Error('Use wurd.connect(appName) before wurd.load()'));
               }
 
@@ -753,7 +731,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 return memo;
               }, {});
 
-              var url = API_URL + '/apps/' + appName + '/content/' + path + '?' + (0, _utils.encodeQueryString)(params);
+              var url = API_URL + '/apps/' + app + '/content/' + path + '?' + (0, _utils.encodeQueryString)(params);
 
               return fetch(url).then(function (res) {
                 return res.json();
@@ -779,7 +757,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'startEditor',
           value: function startEditor() {
-            var appName = this.appName,
+            var app = this.app,
                 lang = this.lang;
 
             // Draft mode is always on if in edit mode
@@ -791,7 +769,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
             script.src = WIDGET_URL;
             script.async = true;
-            script.setAttribute('data-app', appName);
+            script.setAttribute('data-app', app);
 
             if (lang) {
               script.setAttribute('data-lang', lang);
@@ -2358,7 +2336,7 @@ var WurdImage = function WurdImage(_ref) {
     src: url
   });
 
-  if (block.editMode) {
+  if (_wurdWeb2.default.editMode) {
     elProps['data-wurd-img'] = block.id(sid || id);
   }
 
@@ -2407,7 +2385,7 @@ var WurdList = function WurdList(_ref) {
 
   var elProps = _extends({}, rest);
 
-  if (block.editMode) {
+  if (_wurdWeb2.default.editMode) {
     elProps['data-wurd-list'] = block.id(id);
     elProps['data-wurd-list-props'] = keys;
   };
@@ -2462,7 +2440,7 @@ var WurdMarkdown = function WurdMarkdown(_ref) {
     dangerouslySetInnerHTML: { __html: text }
   });
 
-  if (block.editMode) {
+  if (_wurdWeb2.default.editMode) {
     elProps['data-wurd-md'] = block.id(sid || id);
   }
 
@@ -2511,7 +2489,7 @@ var WurdObject = function WurdObject(_ref) {
 
   var elProps = _extends({}, rest);
 
-  if (block.editMode) {
+  if (_wurdWeb2.default.editMode) {
     // Normalise keys to string in form 'key1,key2'
     if (Array.isArray(keys)) {
       keys = keys.join(',');
@@ -2567,7 +2545,7 @@ var WurdText = function WurdText(_ref) {
 
   var elProps = _extends({}, rest);
 
-  if (block.editMode) {
+  if (_wurdWeb2.default.editMode) {
     var editorType = vars ? 'data-wurd-md' : 'data-wurd';
 
     elProps[editorType] = block.id(sid || id);

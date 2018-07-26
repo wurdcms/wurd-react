@@ -12,7 +12,6 @@ import App from './app';
 //Connect to Wurd CMS
 wurd.connect('example', {
   editMode: 'querystring', //Add '?edit to the URL to trigger edit mode'
-  lang: 'en'
 });
 
 
@@ -20,9 +19,9 @@ wurd.connect('example', {
 // Additional content can be loaded later as required; for example loading content by page
 wurd.load('nav,home')
   .catch(err => console.error(err))
-  .then(content => {
+  .then(cms => {
 
-    document.title = content.text('home.meta.title');
+    document.title = cms.text('home.meta.title');
 
     ReactDOM.render(<App />, document.getElementById('root'));
 

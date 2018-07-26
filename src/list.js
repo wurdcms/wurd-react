@@ -8,7 +8,7 @@ const WurdList = ({block, id, children, type = 'ul', keys = 'title', ...rest}) =
 
   const elProps = { ...rest };
 
-  if (block.editMode) {
+  if (wurd.editMode) {
     elProps['data-wurd-list'] = block.id(id);
     elProps['data-wurd-list-props'] = keys;
   };

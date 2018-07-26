@@ -13,7 +13,7 @@ const WurdImage = ({block, id, sid, ...rest}) => {
     src: url
   };
 
-  if (block.editMode) {
+  if (wurd.editMode) {
     elProps['data-wurd-img'] = block.id(sid || id);
   }
 

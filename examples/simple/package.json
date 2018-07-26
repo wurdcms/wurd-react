@@ -15,7 +15,7 @@
     "webpack": "^2.6.1"
   },
   "dependencies": {
-    "serve": "9.3.x"
+    "serve": "9.4.x"
   },
   "babel": {
     "presets": [

@@ -10,7 +10,7 @@ const WurdText = ({block, id, sid, type = 'span', vars, ...rest}) => {
 
   const elProps = { ...rest };
 
-  if (block.editMode) {
+  if (wurd.editMode) {
     const editorType = vars ? 'data-wurd-md' : 'data-wurd';
 
     elProps[editorType] = block.id(sid || id);

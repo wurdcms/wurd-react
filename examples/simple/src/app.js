@@ -7,7 +7,8 @@ import Navbar from './navbar';
 class App extends React.Component {
 
   render() {
-    const page = wurd.content.block('home');
+    const page = wurd.block('home');
+    console.log(page);
 
     return (
       <div>
@@ -17,7 +18,7 @@ class App extends React.Component {
           it does not need to be aware of anything outside it's own scope.
           This makes refactoring easier and makes content item IDs shorter to type.
           */
-          content={wurd.content.block('nav')}
+          content={wurd.block('nav')}
         />
         
         <page.Image id="heroImage" style={{objectFit: 'cover', width: '100%', height: 200}} />

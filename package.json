@@ -24,7 +24,7 @@
     "mocha": "5.2.x",
     "react": "^15.0",
     "react-dom": "^15.0",
-    "serve": "9.3.x",
+    "serve": "9.4.x",
     "webpack": "2.4.1",
     "yargs": "7.1.0"
   },
