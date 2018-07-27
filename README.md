@@ -4,7 +4,7 @@ Wurd is a service that lets you integrate a CMS into any website or app in minut
 
 ## Example
 ```jsx
-import wurd, {WurdText} from 'wurd-react';
+import wurd from 'wurd-react';
 
 wurd.connect('my-app', {
   editMode: true
@@ -49,7 +49,7 @@ npm install wurd-react
 
 
 ## Components
-### WurdText
+### Text
 Creates an editable text region.
 
 ![WurdText example](https://wurdcms.github.io/images/text-vars.gif)
@@ -63,7 +63,7 @@ Creates an editable text region.
 />
 ```
 
-### WurdImage
+### Image
 Creates an editable image (`<img>`).
 
 ![WurdImage example](https://wurdcms.github.io/images/image.gif)
@@ -75,7 +75,7 @@ Creates an editable image (`<img>`).
 />
 ```
 
-### WurdMarkdown
+### Markdown
 Creates an editable text region that displays formatted Markdown.
 
 NOTE: This uses dangerouslySetInnerHTML, [read up on it here](https://facebook.github.io/react/docs/dom-elements.html#dangerouslysetinnerhtml).
@@ -91,7 +91,7 @@ NOTE: This uses dangerouslySetInnerHTML, [read up on it here](https://facebook.g
 />
 ```
 
-### WurdList
+### List
 Creates an editable list of content. The children passed will represent an item in the list.
 
 ```jsx
@@ -109,7 +109,7 @@ Creates an editable list of content. The children passed will represent an item 
 ```
 
 
-### WurdObject
+### Object
 Allows editing a section of content, (like the properties of an object).
 
 This editor is useful for:
