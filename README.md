@@ -97,6 +97,7 @@ Creates an editable list of content. The children passed will represent an item 
 ```jsx
 <content.List 
   id="team.members"       //Required
+  keys="name"             //At least 1 property of the list item
 >
   {item => 
     <li key={item.id()}>
