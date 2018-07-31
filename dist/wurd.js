@@ -263,8 +263,12 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           _classCallCheck(this, Block);
 
           this.wurd = wurd;
-          this.getValue = wurd.store.get.bind(wurd.store);
           this.path = path;
+
+          // Private shortcut to the main content getter
+          // TODO: Make a proper private variable
+          // See http://voidcanvas.com/es6-private-variables/ - but could require Babel Polyfill to be included
+          this._get = wurd.store.get.bind(wurd.store);
 
           // Ensure this is bound properly, required for when using object destructuring
           // E.g. wurd.block('user', ({text}) => text('age'));
@@ -311,13 +315,13 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'get',
           value: function get(path) {
-            var result = this.getValue(this.id(path));
+            var result = this._get(this.id(path));
 
             // If an item is missing, check that the section has been loaded
             if (typeof result === 'undefined' && this.wurd.draft) {
               var section = path.split('.')[0];
 
-              if (!this.getValue(section)) {
+              if (!this._get(section)) {
                 console.warn('Tried to access unloaded section: ' + section);
               }
             }
