@@ -258,8 +258,6 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
       module.exports = function () {
         function Block(wurd, path) {
-          var _this = this;
-
           _classCallCheck(this, Block);
 
           this.wurd = wurd;
@@ -269,22 +267,6 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           // TODO: Make a proper private variable
           // See http://voidcanvas.com/es6-private-variables/ - but could require Babel Polyfill to be included
           this._get = wurd.store.get.bind(wurd.store);
-
-          // Ensure this is bound properly, required for when using object destructuring
-          // E.g. wurd.block('user', ({text}) => text('age'));
-          ['id', 'get', 'text', 'map', 'block', 'markdown', 'el'].forEach(function (name) {
-            _this[name] = _this[name].bind(_this);
-          });
-
-          // Add helper functions to the block for convenience.
-          // These are bound to the block for access to this.text(), this.get() etc.
-          if (wurd.blockHelpers) {
-            Object.keys(wurd.blockHelpers).forEach(function (key) {
-              var fn = wurd.blockHelpers[key];
-
-              _this[key] = fn.bind(_this);
-            });
-          }
         }
 
         /**
@@ -389,7 +371,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'map',
           value: function map(path, fn) {
-            var _this2 = this;
+            var _this = this;
 
             var listContent = this.get(path) || _defineProperty({}, Date.now(), {});
 
@@ -403,7 +385,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
               index++;
 
               var itemPath = [path, key].join('.');
-              var itemBlock = _this2.block(itemPath);
+              var itemBlock = _this.block(itemPath);
 
               return fn.call(undefined, itemBlock, currentIndex);
             });
@@ -468,6 +450,31 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             }
 
             return text;
+          }
+
+          /**
+           * Returns the block helpers, bound to the block instance.
+           * This is useful if using object destructuring for shortcuts,
+           * for example `const {text, el} = block.bound()`
+           *
+           * @return {Object}
+           */
+
+        }, {
+          key: 'helpers',
+          value: function helpers(path) {
+            var block = path ? this.block(path) : this;
+
+            var methodNames = Object.getOwnPropertyNames(Object.getPrototypeOf(block));
+
+            var boundMethods = methodNames.reduce(function (memo, name) {
+              if (name === 'constructor') return memo;
+
+              memo[name] = block[name].bind(block);
+              return memo;
+            }, {});
+
+            return boundMethods;
           }
         }]);
 
@@ -588,6 +595,16 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         value: true
       });
 
+      var _extends = Object.assign || function (target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
+        }return target;
+      };
+
       var _createClass = function () {
         function defineProperties(target, props) {
           for (var i = 0; i < props.length; i++) {
@@ -623,11 +640,21 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
       var Wurd = function () {
         function Wurd(appName, options) {
+          var _this = this;
+
           _classCallCheck(this, Wurd);
 
-          if (appName) {
-            this.connect(appName, options);
-          }
+          this.store = new _store2.default();
+          this.content = new _block2.default(this, null);
+
+          // Add shortcut methods for accessing content
+          ['id', 'get', 'text', 'markdown', 'map', 'block', 'el'].forEach(function (name) {
+            _this[name] = function () {
+              return this.content[name].apply(this.content, arguments);
+            }.bind(_this);
+          });
+
+          this.connect(appName, options);
         }
 
         /**
@@ -644,7 +671,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         _createClass(Wurd, [{
           key: 'connect',
           value: function connect(appName) {
-            var _this = this;
+            var _this2 = this;
 
             var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -657,7 +684,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             ['draft', 'lang', 'debug'].forEach(function (name) {
               var val = options[name];
 
-              if (typeof val !== 'undefined') _this[name] = val;
+              if (typeof val !== 'undefined') _this2[name] = val;
             });
 
             // Activate edit mode if required
@@ -678,21 +705,13 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 break;
             }
 
-            // Finish setup
-            this.store = new _store2.default(options.rawContent || {});
+            if (options.rawContent) {
+              this.store.setSections(options.rawContent);
+            }
 
             if (options.blockHelpers) {
               this.setBlockHelpers(options.blockHelpers);
             }
-
-            this.content = new _block2.default(this, null);
-
-            // Add shortcut methods for fetching content e.g. wurd.get(), wurd.text()
-            ['id', 'get', 'text', 'markdown', 'map', 'block', 'el'].forEach(function (name) {
-              _this[name] = function () {
-                return this.content[name].apply(this.content, arguments);
-              }.bind(_this);
-            });
 
             return this;
           }
@@ -706,7 +725,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'load',
           value: function load(path) {
-            var _this2 = this;
+            var _this3 = this;
 
             var app = this.app,
                 store = this.store,
@@ -730,7 +749,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
               // Build request URL
               var params = ['draft', 'lang'].reduce(function (memo, param) {
-                if (_this2[param]) memo[param] = _this2[param];
+                if (_this3[param]) memo[param] = _this3[param];
 
                 return memo;
               }, {});
@@ -752,7 +771,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 // TODO: Does this cause problems if future load() calls use nested paths e.g. main.subsection
                 store.setSections(result);
 
-                resolve(_this2.content);
+                resolve(_this3.content);
               }).catch(function (err) {
                 return reject(err);
               });
@@ -784,7 +803,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
         }, {
           key: 'setBlockHelpers',
           value: function setBlockHelpers(helpers) {
-            this.blockHelpers = helpers;
+            _extends(_block2.default.prototype, helpers);
           }
         }]);
 
@@ -2395,7 +2414,7 @@ var WurdList = function WurdList(_ref) {
   };
 
   return _react2.default.createElement(type, elProps, block.map(id, function (item, itemId) {
-    return children(item, itemId);
+    return children(item.helpers(), itemId);
   }));
 };
 

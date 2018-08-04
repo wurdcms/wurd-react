@@ -1,6 +1,6 @@
 {
   "name": "wurd-react",
-  "version": "6.1.0",
+  "version": "7.0.0",
   "description": "Components to easily integrate the Wurd CMS into your React app",
   "main": "dist/wurd.js",
   "scripts": {
@@ -37,7 +37,7 @@
   "author": "Charlie Davison",
   "license": "ISC",
   "dependencies": {
-    "wurd-web": "6.1.x"
+    "wurd-web": "git://github.com/wurdcms/wurd-web.git#feature/allowCreatingBlocksBeforeConnect"
   },
   "peerDependencies": {
     "react": "^15.0"
