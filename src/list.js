@@ -14,7 +14,7 @@ const WurdList = ({block, id, children, type = 'ul', keys = 'title', ...rest}) =
   };
 
   return React.createElement(type, elProps,
-    block.map(id, (item, itemId) => children(item.helpers(), itemId))
+    block.map(id, (item, itemId) => children(item, itemId))
   );
 };
 
