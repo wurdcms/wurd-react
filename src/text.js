@@ -2,7 +2,7 @@ import React from 'react';
 import wurd from 'wurd-web';
 
 
-const WurdText = ({block, id, sid, type = 'span', vars, ...rest}) => {
+const WurdText = ({ block, id, sid, type = 'span', vars, children, ...rest }) => {
 
   block = block || wurd.content;
 
@@ -16,7 +16,7 @@ const WurdText = ({block, id, sid, type = 'span', vars, ...rest}) => {
     elProps[editorType] = block.id(sid || id);
   }
 
-  return React.createElement(type, elProps, text);
+  return React.createElement(type, elProps, text === undefined ? children : text);
 
 };
 

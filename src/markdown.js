@@ -2,7 +2,7 @@ import React from 'react';
 import wurd from 'wurd-web';
 
 
-const WurdMarkdown = ({block, id, sid, type = 'div', vars, ...rest}) => {
+const WurdMarkdown = ({ block, id, sid, type = 'div', vars, children, ...rest }) => {
 
   block = block || wurd.content;
 
@@ -10,7 +10,7 @@ const WurdMarkdown = ({block, id, sid, type = 'div', vars, ...rest}) => {
 
   const elProps = {
     ...rest,
-    dangerouslySetInnerHTML: { __html: text }
+    dangerouslySetInnerHTML: { __html: text === undefined ? children : text } // todo markdown(children)
   };
 
   if (wurd.editMode) {

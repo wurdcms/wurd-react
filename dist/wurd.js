@@ -907,7 +907,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
         /**
          * marked - a markdown parser
-         * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
+         * Copyright (c) 2011-2018, Christopher Jeffrey. (MIT Licensed)
          * https://github.com/markedjs/marked
          */
 
@@ -926,7 +926,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             heading: /^ *(#{1,6}) *([^\n]+?) *(?:#+ *)?(?:\n+|$)/,
             nptable: noop,
             blockquote: /^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/,
-            list: /^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,
+            list: /^( {0,3})(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,
             html: '^ {0,3}(?:' // optional indentation
             + '<(script|pre|style)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)' // (1)
             + '|comment[^\\n]*(\\n+|$)' // (2)
@@ -948,8 +948,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           block._title = /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/;
           block.def = edit(block.def).replace('label', block._label).replace('title', block._title).getRegex();
 
-          block.bullet = /(?:[*+-]|\d+\.)/;
-          block.item = /^( *)(bull) [^\n]*(?:\n(?!\1bull )[^\n]*)*/;
+          block.bullet = /(?:[*+-]|\d{1,9}\.)/;
+          block.item = /^( *)(bull) ?[^\n]*(?:\n(?!\1bull ?)[^\n]*)*/;
           block.item = edit(block.item, 'gm').replace(/bull/g, block.bullet).getRegex();
 
           block.list = edit(block.list).replace(/bull/g, block.bullet).replace('hr', '\\n+(?=\\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$))').replace('def', '\\n+(?=' + block.def.source + ')').getRegex();
@@ -974,7 +974,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
            */
 
           block.gfm = merge({}, block.normal, {
-            fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]*?)\n? *\1 *(?:\n+|$)/,
+            fences: /^ {0,3}(`{3,}|~{3,})([^`\n]*)\n(?:|([\s\S]*?)\n)(?: {0,3}\1[~`]* *(?:\n+|$)|$)/,
             paragraph: /^/,
             heading: /^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/
           });
@@ -1006,7 +1006,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
           function Lexer(options) {
             this.tokens = [];
-            this.tokens.links = {};
+            this.tokens.links = Object.create(null);
             this.options = options || marked.defaults;
             this.rules = block.normal;
 
@@ -1052,7 +1052,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
           Lexer.prototype.token = function (src, top) {
             src = src.replace(/^ +$/gm, '');
-            var next, loose, cap, bull, b, item, space, i, tag, l, isordered, istask, ischecked;
+            var next, loose, cap, bull, b, item, listStart, listItems, t, space, i, tag, l, isordered, istask, ischecked;
 
             while (src) {
               // newline
@@ -1071,7 +1071,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 cap = cap[0].replace(/^ {4}/gm, '');
                 this.tokens.push({
                   type: 'code',
-                  text: !this.options.pedantic ? cap.replace(/\n+$/, '') : cap
+                  text: !this.options.pedantic ? rtrim(cap, '\n') : cap
                 });
                 continue;
               }
@@ -1081,7 +1081,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 src = src.substring(cap[0].length);
                 this.tokens.push({
                   type: 'code',
-                  lang: cap[2],
+                  lang: cap[2] ? cap[2].trim() : cap[2],
                   text: cap[3] || ''
                 });
                 continue;
@@ -1169,15 +1169,19 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 bull = cap[2];
                 isordered = bull.length > 1;
 
-                this.tokens.push({
+                listStart = {
                   type: 'list_start',
                   ordered: isordered,
-                  start: isordered ? +bull : ''
-                });
+                  start: isordered ? +bull : '',
+                  loose: false
+                };
+
+                this.tokens.push(listStart);
 
                 // Get each top-level item.
                 cap = cap[0].match(this.rules.item);
 
+                listItems = [];
                 next = false;
                 l = cap.length;
                 i = 0;
@@ -1188,7 +1192,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                   // Remove the list item's bullet
                   // so it is seen as the next token.
                   space = item.length;
-                  item = item.replace(/^ *([*+-]|\d+\.) +/, '');
+                  item = item.replace(/^ *([*+-]|\d+\.) */, '');
 
                   // Outdent whatever the
                   // list item contains. Hacky.
@@ -1199,9 +1203,9 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
                   // Determine whether the next list item belongs here.
                   // Backpedal if it does not belong in this list.
-                  if (this.options.smartLists && i !== l - 1) {
+                  if (i !== l - 1) {
                     b = block.bullet.exec(cap[i + 1])[0];
-                    if (bull !== b && !(bull.length > 1 && b.length > 1)) {
+                    if (bull.length > 1 ? b.length === 1 : b.length > 1 || this.options.smartLists && b !== bull) {
                       src = cap.slice(i + 1).join('\n') + src;
                       i = l - 1;
                     }
@@ -1216,6 +1220,10 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                     if (!loose) loose = next;
                   }
 
+                  if (loose) {
+                    listStart.loose = true;
+                  }
+
                   // Check for task list items
                   istask = /^\[[ xX]\] /.test(item);
                   ischecked = undefined;
@@ -1224,11 +1232,15 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                     item = item.replace(/^\[[ xX]\] +/, '');
                   }
 
-                  this.tokens.push({
-                    type: loose ? 'loose_item_start' : 'list_item_start',
+                  t = {
+                    type: 'list_item_start',
                     task: istask,
-                    checked: ischecked
-                  });
+                    checked: ischecked,
+                    loose: loose
+                  };
+
+                  listItems.push(t);
+                  this.tokens.push(t);
 
                   // Recurse.
                   this.token(item, false);
@@ -1236,6 +1248,14 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                   this.tokens.push({
                     type: 'list_item_end'
                   });
+                }
+
+                if (listStart.loose) {
+                  l = listItems.length;
+                  i = 0;
+                  for (; i < l; i++) {
+                    listItems[i].loose = true;
+                  }
                 }
 
                 this.tokens.push({
@@ -1360,13 +1380,18 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             link: /^!?\[(label)\]\(href(?:\s+(title))?\s*\)/,
             reflink: /^!?\[(label)\]\[(?!\s*\])((?:\\[\[\]]?|[^\[\]\\])+)\]/,
             nolink: /^!?\[(?!\s*\])((?:\[[^\[\]]*\]|\\[\[\]]|[^\[\]])*)\](?:\[\])?/,
-            strong: /^__([^\s][\s\S]*?[^\s])__(?!_)|^\*\*([^\s][\s\S]*?[^\s])\*\*(?!\*)|^__([^\s])__(?!_)|^\*\*([^\s])\*\*(?!\*)/,
-            em: /^_([^\s][\s\S]*?[^\s_])_(?!_)|^_([^\s_][\s\S]*?[^\s])_(?!_)|^\*([^\s][\s\S]*?[^\s*])\*(?!\*)|^\*([^\s*][\s\S]*?[^\s])\*(?!\*)|^_([^\s_])_(?!_)|^\*([^\s*])\*(?!\*)/,
-            code: /^(`+)\s*([\s\S]*?[^`]?)\s*\1(?!`)/,
-            br: /^ {2,}\n(?!\s*$)/,
+            strong: /^__([^\s_])__(?!_)|^\*\*([^\s*])\*\*(?!\*)|^__([^\s][\s\S]*?[^\s])__(?!_)|^\*\*([^\s][\s\S]*?[^\s])\*\*(?!\*)/,
+            em: /^_([^\s_])_(?!_)|^\*([^\s*"<\[])\*(?!\*)|^_([^\s][\s\S]*?[^\s_])_(?!_|[^\spunctuation])|^_([^\s_][\s\S]*?[^\s])_(?!_|[^\spunctuation])|^\*([^\s"<\[][\s\S]*?[^\s*])\*(?!\*)|^\*([^\s*"<\[][\s\S]*?[^\s])\*(?!\*)/,
+            code: /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/,
+            br: /^( {2,}|\\)\n(?!\s*$)/,
             del: noop,
-            text: /^[\s\S]+?(?=[\\<!\[`*]|\b_| {2,}\n|$)/
+            text: /^(`+|[^`])[\s\S]*?(?=[\\<!\[`*]|\b_| {2,}\n|$)/
           };
+
+          // list of punctuation marks from common mark spec
+          // without ` and ] to workaround Rule 17 (inline code blocks/links)
+          inline._punctuation = '!"#$%&\'()*+,\\-./:;<=>?@\\[^_{|}~';
+          inline.em = edit(inline.em).replace(/punctuation/g, inline._punctuation).getRegex();
 
           inline._escapes = /\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/g;
 
@@ -1379,7 +1404,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           inline.tag = edit(inline.tag).replace('comment', block._comment).replace('attribute', inline._attribute).getRegex();
 
           inline._label = /(?:\[[^\[\]]*\]|\\[\[\]]?|`[^`]*`|[^\[\]\\])*?/;
-          inline._href = /\s*(<(?:\\[<>]?|[^\s<>\\])*>|(?:\\[()]?|\([^\s\x00-\x1f()\\]*\)|[^\s\x00-\x1f()\\])*?)/;
+          inline._href = /\s*(<(?:\\[<>]?|[^\s<>\\])*>|(?:\\[()]?|\([^\s\x00-\x1f\\]*\)|[^\s\x00-\x1f()\\])*?)/;
           inline._title = /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/;
 
           inline.link = edit(inline.link).replace('label', inline._label).replace('href', inline._href).replace('title', inline._title).getRegex();
@@ -1409,12 +1434,14 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
           inline.gfm = merge({}, inline.normal, {
             escape: edit(inline.escape).replace('])', '~|])').getRegex(),
-            url: edit(/^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace('email', inline._email).getRegex(),
+            _extended_email: /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/,
+            url: /^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/,
             _backpedal: /(?:[^?!.,:;*_~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_~)]+(?!$))+/,
-            del: /^~~(?=\S)([\s\S]*?\S)~~/,
-            text: edit(inline.text).replace(']|', '~]|').replace('|', '|https?://|ftp://|www\\.|[a-zA-Z0-9.!#$%&\'*+/=?^_`{\\|}~-]+@|').getRegex()
+            del: /^~+(?=\S)([\s\S]*?\S)~+/,
+            text: edit(inline.text).replace(']|', '~]|').replace('|$', '|https?://|ftp://|www\\.|[a-zA-Z0-9.!#$%&\'*+/=?^_`{\\|}~-]+@|$').getRegex()
           });
 
+          inline.gfm.url = edit(inline.gfm.url, 'i').replace('email', inline.gfm._extended_email).getRegex();
           /**
            * GFM + Line Breaks Inline Grammar
            */
@@ -1475,46 +1502,14 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 text,
                 href,
                 title,
-                cap;
+                cap,
+                prevCapZero;
 
             while (src) {
               // escape
               if (cap = this.rules.escape.exec(src)) {
                 src = src.substring(cap[0].length);
-                out += cap[1];
-                continue;
-              }
-
-              // autolink
-              if (cap = this.rules.autolink.exec(src)) {
-                src = src.substring(cap[0].length);
-                if (cap[2] === '@') {
-                  text = escape(this.mangle(cap[1]));
-                  href = 'mailto:' + text;
-                } else {
-                  text = escape(cap[1]);
-                  href = text;
-                }
-                out += this.renderer.link(href, null, text);
-                continue;
-              }
-
-              // url (gfm)
-              if (!this.inLink && (cap = this.rules.url.exec(src))) {
-                cap[0] = this.rules._backpedal.exec(cap[0])[0];
-                src = src.substring(cap[0].length);
-                if (cap[2] === '@') {
-                  text = escape(cap[0]);
-                  href = 'mailto:' + text;
-                } else {
-                  text = escape(cap[0]);
-                  if (cap[1] === 'www.') {
-                    href = 'http://' + text;
-                  } else {
-                    href = text;
-                  }
-                }
-                out += this.renderer.link(href, null, text);
+                out += escape(cap[1]);
                 continue;
               }
 
@@ -1525,6 +1520,12 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 } else if (this.inLink && /^<\/a>/i.test(cap[0])) {
                   this.inLink = false;
                 }
+                if (!this.inRawBlock && /^<(pre|code|kbd|script)(\s|>)/i.test(cap[0])) {
+                  this.inRawBlock = true;
+                } else if (this.inRawBlock && /^<\/(pre|code|kbd|script)(\s|>)/i.test(cap[0])) {
+                  this.inRawBlock = false;
+                }
+
                 src = src.substring(cap[0].length);
                 out += this.options.sanitize ? this.options.sanitizer ? this.options.sanitizer(cap[0]) : escape(cap[0]) : cap[0];
                 continue;
@@ -1607,10 +1608,51 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 continue;
               }
 
+              // autolink
+              if (cap = this.rules.autolink.exec(src)) {
+                src = src.substring(cap[0].length);
+                if (cap[2] === '@') {
+                  text = escape(this.mangle(cap[1]));
+                  href = 'mailto:' + text;
+                } else {
+                  text = escape(cap[1]);
+                  href = text;
+                }
+                out += this.renderer.link(href, null, text);
+                continue;
+              }
+
+              // url (gfm)
+              if (!this.inLink && (cap = this.rules.url.exec(src))) {
+                if (cap[2] === '@') {
+                  text = escape(cap[0]);
+                  href = 'mailto:' + text;
+                } else {
+                  // do extended autolink path validation
+                  do {
+                    prevCapZero = cap[0];
+                    cap[0] = this.rules._backpedal.exec(cap[0])[0];
+                  } while (prevCapZero !== cap[0]);
+                  text = escape(cap[0]);
+                  if (cap[1] === 'www.') {
+                    href = 'http://' + text;
+                  } else {
+                    href = text;
+                  }
+                }
+                src = src.substring(cap[0].length);
+                out += this.renderer.link(href, null, text);
+                continue;
+              }
+
               // text
               if (cap = this.rules.text.exec(src)) {
                 src = src.substring(cap[0].length);
-                out += this.renderer.text(escape(this.smartypants(cap[0])));
+                if (this.inRawBlock) {
+                  out += this.renderer.text(cap[0]);
+                } else {
+                  out += this.renderer.text(escape(this.smartypants(cap[0])));
+                }
                 continue;
               }
 
@@ -1690,7 +1732,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             this.options = options || marked.defaults;
           }
 
-          Renderer.prototype.code = function (code, lang, escaped) {
+          Renderer.prototype.code = function (code, infostring, escaped) {
+            var lang = (infostring || '').match(/\S*/)[0];
             if (this.options.highlight) {
               var out = this.options.highlight(code, lang);
               if (out != null && out !== code) {
@@ -1714,9 +1757,9 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             return html;
           };
 
-          Renderer.prototype.heading = function (text, level, raw) {
+          Renderer.prototype.heading = function (text, level, raw, slugger) {
             if (this.options.headerIds) {
-              return '<h' + level + ' id="' + this.options.headerPrefix + raw.toLowerCase().replace(/[^\w]+/g, '-') + '">' + text + '</h' + level + '>\n';
+              return '<h' + level + ' id="' + this.options.headerPrefix + slugger.slug(raw) + '">' + text + '</h' + level + '>\n';
             }
             // ignore IDs
             return '<h' + level + '>' + text + '</h' + level + '>\n';
@@ -1782,22 +1825,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           };
 
           Renderer.prototype.link = function (href, title, text) {
-            if (this.options.sanitize) {
-              try {
-                var prot = decodeURIComponent(unescape(href)).replace(/[^\w:]/g, '').toLowerCase();
-              } catch (e) {
-                return text;
-              }
-              if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
-                return text;
-              }
-            }
-            if (this.options.baseUrl && !originIndependentUrl.test(href)) {
-              href = resolveUrl(this.options.baseUrl, href);
-            }
-            try {
-              href = encodeURI(href).replace(/%25/g, '%');
-            } catch (e) {
+            href = cleanUrl(this.options.sanitize, this.options.baseUrl, href);
+            if (href === null) {
               return text;
             }
             var out = '<a href="' + escape(href) + '"';
@@ -1809,9 +1838,11 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           };
 
           Renderer.prototype.image = function (href, title, text) {
-            if (this.options.baseUrl && !originIndependentUrl.test(href)) {
-              href = resolveUrl(this.options.baseUrl, href);
+            href = cleanUrl(this.options.sanitize, this.options.baseUrl, href);
+            if (href === null) {
+              return text;
             }
+
             var out = '<img src="' + href + '" alt="' + text + '"';
             if (title) {
               out += ' title="' + title + '"';
@@ -1856,6 +1887,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             this.options.renderer = this.options.renderer || new Renderer();
             this.renderer = this.options.renderer;
             this.renderer.options = this.options;
+            this.slugger = new Slugger();
           }
 
           /**
@@ -1931,7 +1963,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 }
               case 'heading':
                 {
-                  return this.renderer.heading(this.inline.output(this.token.text), this.token.depth, unescape(this.inlineText.output(this.token.text)));
+                  return this.renderer.heading(this.inline.output(this.token.text), this.token.depth, unescape(this.inlineText.output(this.token.text)), this.slugger);
                 }
               case 'code':
                 {
@@ -1990,23 +2022,14 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
               case 'list_item_start':
                 {
                   body = '';
+                  var loose = this.token.loose;
 
                   if (this.token.task) {
                     body += this.renderer.checkbox(this.token.checked);
                   }
 
                   while (this.next().type !== 'list_item_end') {
-                    body += this.token.type === 'text' ? this.parseText() : this.tok();
-                  }
-
-                  return this.renderer.listitem(body);
-                }
-              case 'loose_item_start':
-                {
-                  body = '';
-
-                  while (this.next().type !== 'list_item_end') {
-                    body += this.tok();
+                    body += !loose && this.token.type === 'text' ? this.parseText() : this.tok();
                   }
 
                   return this.renderer.listitem(body);
@@ -2024,7 +2047,43 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
                 {
                   return this.renderer.paragraph(this.parseText());
                 }
+              default:
+                {
+                  var errMsg = 'Token with "' + this.token.type + '" type was not found.';
+                  if (this.options.silent) {
+                    console.log(errMsg);
+                  } else {
+                    throw new Error(errMsg);
+                  }
+                }
             }
+          };
+
+          /**
+           * Slugger generates header id
+           */
+
+          function Slugger() {
+            this.seen = {};
+          }
+
+          /**
+           * Convert string to unique id
+           */
+
+          Slugger.prototype.slug = function (value) {
+            var slug = value.toLowerCase().trim().replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g, '').replace(/\s/g, '-');
+
+            if (this.seen.hasOwnProperty(slug)) {
+              var originalSlug = slug;
+              do {
+                this.seen[originalSlug]++;
+                slug = originalSlug + '-' + this.seen[originalSlug];
+              } while (this.seen.hasOwnProperty(slug));
+            }
+            this.seen[slug] = 0;
+
+            return slug;
           };
 
           /**
@@ -2032,8 +2091,35 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
            */
 
           function escape(html, encode) {
-            return html.replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            if (encode) {
+              if (escape.escapeTest.test(html)) {
+                return html.replace(escape.escapeReplace, function (ch) {
+                  return escape.replacements[ch];
+                });
+              }
+            } else {
+              if (escape.escapeTestNoEncode.test(html)) {
+                return html.replace(escape.escapeReplaceNoEncode, function (ch) {
+                  return escape.replacements[ch];
+                });
+              }
+            }
+
+            return html;
           }
+
+          escape.escapeTest = /[&<>"']/;
+          escape.escapeReplace = /[&<>"']/g;
+          escape.replacements = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+          };
+
+          escape.escapeTestNoEncode = /[<>"']|&(?!#?\w+;)/;
+          escape.escapeReplaceNoEncode = /[<>"']|&(?!#?\w+;)/g;
 
           function unescape(html) {
             // explicitly match decimal, hex, and named HTML entities
@@ -2063,6 +2149,28 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             };
           }
 
+          function cleanUrl(sanitize, base, href) {
+            if (sanitize) {
+              try {
+                var prot = decodeURIComponent(unescape(href)).replace(/[^\w:]/g, '').toLowerCase();
+              } catch (e) {
+                return null;
+              }
+              if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
+                return null;
+              }
+            }
+            if (base && !originIndependentUrl.test(href)) {
+              href = resolveUrl(base, href);
+            }
+            try {
+              href = encodeURI(href).replace(/%25/g, '%');
+            } catch (e) {
+              return null;
+            }
+            return href;
+          }
+
           function resolveUrl(base, href) {
             if (!baseUrls[' ' + base]) {
               // we can ignore everything in base after the last slash of its path component,
@@ -2071,7 +2179,7 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
               if (/^[^:]+:\/*[^/]*$/.test(base)) {
                 baseUrls[' ' + base] = base + '/';
               } else {
-                baseUrls[' ' + base] = base.replace(/[^/]*$/, '');
+                baseUrls[' ' + base] = rtrim(base, '/', true);
               }
             }
             base = baseUrls[' ' + base];
@@ -2108,7 +2216,23 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
           }
 
           function splitCells(tableRow, count) {
-            var cells = tableRow.replace(/([^\\])\|/g, '$1 |').split(/ +\| */),
+            // ensure that every cell-delimiting pipe has a space
+            // before it to distinguish it from an escaped pipe
+            var row = tableRow.replace(/\|/g, function (match, offset, str) {
+              var escaped = false,
+                  curr = offset;
+              while (--curr >= 0 && str[curr] === '\\') {
+                escaped = !escaped;
+              }if (escaped) {
+                // odd number of slashes means | is escaped
+                // so we leave it alone
+                return '|';
+              } else {
+                // add space before unescaped |
+                return ' |';
+              }
+            }),
+                cells = row.split(/ \|/),
                 i = 0;
 
             if (cells.length > count) {
@@ -2120,9 +2244,36 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
             }
 
             for (; i < cells.length; i++) {
-              cells[i] = cells[i].replace(/\\\|/g, '|');
+              // leading or trailing whitespace is ignored per the gfm spec
+              cells[i] = cells[i].trim().replace(/\\\|/g, '|');
             }
             return cells;
+          }
+
+          // Remove trailing 'c's. Equivalent to str.replace(/c*$/, '').
+          // /c*$/ is vulnerable to REDOS.
+          // invert: Remove suffix of non-c chars instead. Default falsey.
+          function rtrim(str, c, invert) {
+            if (str.length === 0) {
+              return '';
+            }
+
+            // Length of suffix matching the invert condition.
+            var suffLen = 0;
+
+            // Step left until we fail to match the invert condition.
+            while (suffLen < str.length) {
+              var currChar = str.charAt(str.length - suffLen - 1);
+              if (currChar === c && !invert) {
+                suffLen++;
+              } else if (currChar !== c && invert) {
+                suffLen++;
+              } else {
+                break;
+              }
+            }
+
+            return str.substr(0, str.length - suffLen);
           }
 
           /**
@@ -2265,6 +2416,8 @@ var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbo
 
           marked.InlineLexer = InlineLexer;
           marked.inlineLexer = InlineLexer.output;
+
+          marked.Slugger = Slugger;
 
           marked.parse = marked;
 
@@ -2461,15 +2614,16 @@ var WurdMarkdown = function WurdMarkdown(_ref) {
       _ref$type = _ref.type,
       type = _ref$type === undefined ? 'div' : _ref$type,
       vars = _ref.vars,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'vars']);
+      children = _ref.children,
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'vars', 'children']);
 
   block = block || _wurdWeb2.default.content;
 
   var text = block.markdown(id, vars);
 
   var elProps = _extends({}, rest, {
-    dangerouslySetInnerHTML: { __html: text }
-  });
+    dangerouslySetInnerHTML: { __html: text === undefined ? children : text // todo markdown(children)
+    } });
 
   if (_wurdWeb2.default.editMode) {
     elProps['data-wurd-md'] = block.id(sid || id);
@@ -2568,7 +2722,8 @@ var WurdText = function WurdText(_ref) {
       _ref$type = _ref.type,
       type = _ref$type === undefined ? 'span' : _ref$type,
       vars = _ref.vars,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'vars']);
+      children = _ref.children,
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'vars', 'children']);
 
   block = block || _wurdWeb2.default.content;
 
@@ -2582,7 +2737,7 @@ var WurdText = function WurdText(_ref) {
     elProps[editorType] = block.id(sid || id);
   }
 
-  return _react2.default.createElement(type, elProps, text);
+  return _react2.default.createElement(type, elProps, text === undefined ? children : text);
 };
 
 exports.default = WurdText;
