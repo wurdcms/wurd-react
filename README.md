@@ -57,7 +57,7 @@ Creates an editable text region.
 ```jsx
 <content.Text
   id="title",             // Required
-  type="h1",              // Defaults to `span` 
+  component="h1",         // Defaults to `span` 
   vars={{name: 'John'}},  // Replaces mustache style tokens (e.g. `{{name}}`) with the given data
   // Other standard props (className, style etc.) can be passed too
 />
@@ -85,7 +85,7 @@ NOTE: This uses dangerouslySetInnerHTML, [read up on it here](https://facebook.g
 ```jsx
 <content.Markdown
   id="home.intro",        // Required
-  type="div",             // Defaults to `div`
+  component="div",        // Defaults to `div`
   vars={{name: 'John'}},  // Replaces mustache style tokens (e.g. `{{name}}`) with the given data
   // Other standard props (className, style etc.) can be passed too
 />
@@ -121,7 +121,7 @@ This editor is useful for:
 <content.Object
   id="meta",
   keys="title,description" // Required; will define with items can be edited
-  type="span",             // Defaults to `div`
+  component="span",        // Defaults to `div`
   // Other standard props (className, style etc.) can be passed too
 />
 ```

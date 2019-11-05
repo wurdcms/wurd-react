@@ -2,7 +2,7 @@ import React from 'react';
 import wurd from 'wurd-web';
 
 
-const WurdObject = ({block, id, sid, type = 'span', keys, children, ...rest}) => {
+const WurdObject = ({ block, id, sid, component = 'span', keys, children, ...rest }) => {
 
   block = block || wurd.content;
 
@@ -18,7 +18,7 @@ const WurdObject = ({block, id, sid, type = 'span', keys, children, ...rest}) =>
     elProps['data-wurd-obj-props'] = keys;
   }
 
-  return React.createElement(type, elProps, children);
+  return React.createElement(component, elProps, children);
 
 };
 

@@ -2559,11 +2559,11 @@ var WurdList = function WurdList(_ref) {
   var block = _ref.block,
       id = _ref.id,
       children = _ref.children,
-      _ref$type = _ref.type,
-      type = _ref$type === undefined ? 'ul' : _ref$type,
+      _ref$component = _ref.component,
+      component = _ref$component === undefined ? 'ul' : _ref$component,
       _ref$keys = _ref.keys,
       keys = _ref$keys === undefined ? 'title' : _ref$keys,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'children', 'type', 'keys']);
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'children', 'component', 'keys']);
 
   block = block || _wurdWeb2.default.content;
 
@@ -2574,7 +2574,7 @@ var WurdList = function WurdList(_ref) {
     elProps['data-wurd-list-props'] = keys;
   };
 
-  return _react2.default.createElement(type, elProps, block.map(id, function (item, itemId) {
+  return _react2.default.createElement(component, elProps, block.map(id, function (item, itemId) {
     return children(item, itemId);
   }));
 };
@@ -2611,11 +2611,11 @@ var WurdMarkdown = function WurdMarkdown(_ref) {
   var block = _ref.block,
       id = _ref.id,
       sid = _ref.sid,
-      _ref$type = _ref.type,
-      type = _ref$type === undefined ? 'div' : _ref$type,
+      _ref$component = _ref.component,
+      component = _ref$component === undefined ? 'div' : _ref$component,
       vars = _ref.vars,
       children = _ref.children,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'vars', 'children']);
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'component', 'vars', 'children']);
 
   block = block || _wurdWeb2.default.content;
 
@@ -2629,7 +2629,7 @@ var WurdMarkdown = function WurdMarkdown(_ref) {
     elProps['data-wurd-md'] = block.id(sid || id);
   }
 
-  return _react2.default.createElement(type, elProps);
+  return _react2.default.createElement(component, elProps);
 };
 
 exports.default = WurdMarkdown;
@@ -2664,11 +2664,11 @@ var WurdObject = function WurdObject(_ref) {
   var block = _ref.block,
       id = _ref.id,
       sid = _ref.sid,
-      _ref$type = _ref.type,
-      type = _ref$type === undefined ? 'span' : _ref$type,
+      _ref$component = _ref.component,
+      component = _ref$component === undefined ? 'span' : _ref$component,
       keys = _ref.keys,
       children = _ref.children,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'keys', 'children']);
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'component', 'keys', 'children']);
 
   block = block || _wurdWeb2.default.content;
 
@@ -2684,7 +2684,7 @@ var WurdObject = function WurdObject(_ref) {
     elProps['data-wurd-obj-props'] = keys;
   }
 
-  return _react2.default.createElement(type, elProps, children);
+  return _react2.default.createElement(component, elProps, children);
 };
 
 exports.default = WurdObject;
@@ -2719,11 +2719,11 @@ var WurdText = function WurdText(_ref) {
   var block = _ref.block,
       id = _ref.id,
       sid = _ref.sid,
-      _ref$type = _ref.type,
-      type = _ref$type === undefined ? 'span' : _ref$type,
+      _ref$component = _ref.component,
+      component = _ref$component === undefined ? 'span' : _ref$component,
       vars = _ref.vars,
       children = _ref.children,
-      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'type', 'vars', 'children']);
+      rest = _objectWithoutProperties(_ref, ['block', 'id', 'sid', 'component', 'vars', 'children']);
 
   block = block || _wurdWeb2.default.content;
 
@@ -2737,7 +2737,7 @@ var WurdText = function WurdText(_ref) {
     elProps[editorType] = block.id(sid || id);
   }
 
-  return _react2.default.createElement(type, elProps, text === undefined ? children : text);
+  return _react2.default.createElement(component, elProps, text === undefined ? children : text);
 };
 
 exports.default = WurdText;
