@@ -2,8 +2,13 @@ import React from 'react';
 import wurd from 'wurd-web';
 
 
-const WurdText = ({block, id, sid, type = 'span', vars, ...rest}) => {
-
+export default function WurdText({
+  block,
+  id, sid,
+  type = 'span', component: Component = type,
+  vars,
+  ...rest
+}) {
   block = block || wurd.content;
 
   const text = block.text(id, vars);
@@ -16,9 +21,5 @@ const WurdText = ({block, id, sid, type = 'span', vars, ...rest}) => {
     elProps[editorType] = block.id(sid || id);
   }
 
-  return React.createElement(type, elProps, text);
-
-};
-
-
-export default WurdText;
+  return React.createElement(Component, elProps, text);
+}

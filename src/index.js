@@ -6,24 +6,25 @@ import WurdImage from './image';
 import WurdList from './list';
 import WurdObject from './object';
 
+
 export default wurd;
 
 wurd.setBlockHelpers({
-  Text: function(props) {
+  Text: function (props) {
     return React.createElement(WurdText, { block: this, ...props });
   },
-  Markdown: function(props) {
+  Markdown: function (props) {
     return React.createElement(WurdMarkdown, { block: this, ...props });
   },
-  Image: function(props) {
+  Image: function (props) {
     return React.createElement(WurdImage, { block: this, ...props });
   },
-  List: function(props) {
+  List: function (props) {
     return React.createElement(WurdList, { block: this, ...props });
   },
-  Object: function(props) {
+  Object: function (props) {
     return React.createElement(WurdObject, { block: this, ...props });
-  }
+  },
 });
 
 export {
@@ -31,5 +32,5 @@ export {
   WurdMarkdown,
   WurdImage,
   WurdList,
-  WurdObject
+  WurdObject,
 };

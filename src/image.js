@@ -2,8 +2,7 @@ import React from 'react';
 import wurd from 'wurd-web';
 
 
-const WurdImage = ({block, id, sid, ...rest}) => {
-
+export default function WurdImage({ block, id, sid, ...rest }) {
   block = block || wurd.content;
 
   const url = block.text(id);
@@ -18,8 +17,4 @@ const WurdImage = ({block, id, sid, ...rest}) => {
   }
 
   return React.createElement('img', elProps);
-
-};
-
-
-export default WurdImage;
+}

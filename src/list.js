@@ -2,8 +2,13 @@ import React from 'react';
 import wurd from 'wurd-web';
 
 
-const WurdList = ({block, id, children, type = 'ul', keys = 'title', ...rest}) => {
-
+export default function WurdList({
+  block, id,
+  children,
+  type = 'ul', component: Component = type,
+  keys = 'title',
+  ...rest
+}) {
   block = block || wurd.content;
 
   const elProps = { ...rest };
@@ -13,10 +18,7 @@ const WurdList = ({block, id, children, type = 'ul', keys = 'title', ...rest}) =
     elProps['data-wurd-list-props'] = keys;
   };
 
-  return React.createElement(type, elProps,
+  return React.createElement(Component, elProps,
     block.map(id, (item, itemId) => children(item, itemId))
   );
-};
-
-
-export default WurdList;
+}

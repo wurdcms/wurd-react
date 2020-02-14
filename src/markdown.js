@@ -2,8 +2,13 @@ import React from 'react';
 import wurd from 'wurd-web';
 
 
-const WurdMarkdown = ({block, id, sid, type = 'div', vars, ...rest}) => {
-
+export default function WurdMarkdown({
+  block,
+  id, sid,
+  type = 'div', component: Component = type,
+  vars,
+  ...rest
+}) {
   block = block || wurd.content;
 
   const text = block.markdown(id, vars);
@@ -17,9 +22,5 @@ const WurdMarkdown = ({block, id, sid, type = 'div', vars, ...rest}) => {
     elProps['data-wurd-md'] = block.id(sid || id);
   }
 
-  return React.createElement(type, elProps);
-
-};
-
-
-export default WurdMarkdown;
+  return React.createElement(Component, elProps);
+}
