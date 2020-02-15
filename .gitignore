@@ -2,4 +2,6 @@ node_modules
 .DS_Store
 lib/
 
+# no need for package-lock for libs
 package-lock.json
+examples/simple/package-lock.json

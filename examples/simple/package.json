@@ -1,4 +1,5 @@
 {
+  "homepage": "https://wurdcms.github.io/wurd-react/examples/simple/build/",
   "scripts": {
     "dev": "SKIP_PREFLIGHT_CHECK=true react-scripts start",
     "build": "SKIP_PREFLIGHT_CHECK=true react-scripts build"
@@ -10,12 +11,6 @@
   },
   "dependencies": {
     "wurd-react": "file:../.."
-  },
-  "babel": {
-    "presets": [
-      "es2015",
-      "react"
-    ]
   },
   "browserslist": {
     "production": [
