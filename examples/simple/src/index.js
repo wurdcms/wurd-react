@@ -4,14 +4,14 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import wurd from 'wurd-react'; // In your app this should require the `wurd-react` module
+import wurd from 'wurd-react';
 
 import App from './app';
 
 
-//Connect to Wurd CMS
+// Connect to Wurd CMS
 wurd.connect('example', {
-  editMode: 'querystring', //Add '?edit to the URL to trigger edit mode'
+  editMode: 'querystring', // Add '?edit to the URL to trigger edit mode'
 });
 
 

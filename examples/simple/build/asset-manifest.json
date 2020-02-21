@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.js": "/wurd-react/examples/simple/build/static/js/main.415a2408.chunk.js",
-    "main.js.map": "/wurd-react/examples/simple/build/static/js/main.415a2408.chunk.js.map",
+    "main.js": "/wurd-react/examples/simple/build/static/js/main.4b4f9a5f.chunk.js",
+    "main.js.map": "/wurd-react/examples/simple/build/static/js/main.4b4f9a5f.chunk.js.map",
     "runtime-main.js": "/wurd-react/examples/simple/build/static/js/runtime-main.78b421aa.js",
     "runtime-main.js.map": "/wurd-react/examples/simple/build/static/js/runtime-main.78b421aa.js.map",
-    "static/js/2.870d5377.chunk.js": "/wurd-react/examples/simple/build/static/js/2.870d5377.chunk.js",
-    "static/js/2.870d5377.chunk.js.map": "/wurd-react/examples/simple/build/static/js/2.870d5377.chunk.js.map",
+    "static/js/2.584326fa.chunk.js": "/wurd-react/examples/simple/build/static/js/2.584326fa.chunk.js",
+    "static/js/2.584326fa.chunk.js.map": "/wurd-react/examples/simple/build/static/js/2.584326fa.chunk.js.map",
     "index.html": "/wurd-react/examples/simple/build/index.html",
-    "precache-manifest.942ac3c9c79cf64c95737264632b0164.js": "/wurd-react/examples/simple/build/precache-manifest.942ac3c9c79cf64c95737264632b0164.js",
+    "precache-manifest.ab4f5084f7bfc9a37aab531fd8cfa08e.js": "/wurd-react/examples/simple/build/precache-manifest.ab4f5084f7bfc9a37aab531fd8cfa08e.js",
     "service-worker.js": "/wurd-react/examples/simple/build/service-worker.js",
-    "static/js/2.870d5377.chunk.js.LICENSE.txt": "/wurd-react/examples/simple/build/static/js/2.870d5377.chunk.js.LICENSE.txt",
-    "static/js/main.415a2408.chunk.js.LICENSE.txt": "/wurd-react/examples/simple/build/static/js/main.415a2408.chunk.js.LICENSE.txt"
+    "static/js/2.584326fa.chunk.js.LICENSE.txt": "/wurd-react/examples/simple/build/static/js/2.584326fa.chunk.js.LICENSE.txt",
+    "static/js/main.4b4f9a5f.chunk.js.LICENSE.txt": "/wurd-react/examples/simple/build/static/js/main.4b4f9a5f.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.78b421aa.js",
-    "static/js/2.870d5377.chunk.js",
-    "static/js/main.415a2408.chunk.js"
+    "static/js/2.584326fa.chunk.js",
+    "static/js/main.4b4f9a5f.chunk.js"
   ]
 }
