@@ -48,22 +48,29 @@ export default [
     ]
   },
 
-  // CommonJS (for Node) and ES module (for bundlers) build.
+  // CommonJS (for Node)
   {
     input: 'src/index.js',
     external: ['react', 'wurd-web'],
-    output: [
-      {
-        file: pkg.main,
-        format: 'cjs',
-        exports: 'named',
-      },
-      {
-        file: pkg.module,
-        format: 'es',
-        exports: 'named',
-      }
-    ],
+    output: {
+      file: pkg.main,
+      format: 'cjs',
+      exports: 'named',
+    },
     plugins: []
+  },
+
+  // ES module (for bundlers) build.
+  {
+    input: 'src/index.js',
+    external: ['react', 'wurd-web'],
+    output: {
+      file: pkg.module,
+      format: 'es',
+      exports: 'named',
+    },
+    plugins: [
+      babel()
+    ]
   }
 ];
