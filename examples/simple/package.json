@@ -5,7 +5,6 @@
     "build": "SKIP_PREFLIGHT_CHECK=true react-scripts build"
   },
   "devDependencies": {
-    "prop-types": "^15.7.2",
     "react-bootstrap": "^0.33.1",
     "react-scripts": "^3.3.1"
   },

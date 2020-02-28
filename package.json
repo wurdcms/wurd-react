@@ -1,31 +1,27 @@
 {
   "name": "wurd-react",
-  "version": "7.0.0",
+  "version": "7.2.0",
   "description": "Components to easily integrate the Wurd CMS into your React app",
-  "main": "dist/wurd.js",
+  "main": "dist/wurd-react.cjs.js",
+  "module": "dist/wurd-react.esm.js",
+  "browser": "dist/wurd-react.js",
   "scripts": {
-    "build": "NODE_ENV=production webpack",
-    "dev": "webpack --progress --colors --watch",
-    "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
-    "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js"
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.4",
-    "@babel/preset-env": "^7.8.4",
+    "@babel/core": "^7.8.6",
+    "@babel/preset-env": "^7.8.6",
     "@babel/preset-react": "^7.8.3",
-    "babel-eslint": "^10.0.3",
-    "babel-loader": "^8.0.6",
-    "eslint": "^6.8.0",
-    "eslint-loader": "^3.0.3",
     "eslint-plugin-react": "^7.18.3",
     "mocha": "^7.0.1",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "serve": "^11.3.0",
-    "webpack": "^4.41.6",
-    "webpack-cli": "^3.3.11",
-    "yargs": "^15.1.0"
+    "rollup": "^1.32.0",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-eslint": "^7.0.0",
+    "rollup-plugin-filesize": "^6.2.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-uglify": "^6.0.4"
   },
   "keywords": [
     "cms",
@@ -36,7 +32,7 @@
   "author": "Charlie Davison",
   "license": "ISC",
   "dependencies": {
-    "wurd-web": "^7.0.0"
+    "wurd-web": "file:../wurd-web"
   },
   "peerDependencies": {
     "react": "^15.0.0"
