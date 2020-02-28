@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/wurd-react/examples/simple/build/precache-manifest.ab4f5084f7bfc9a37aab531fd8cfa08e.js"
+  "/wurd-react/examples/simple/build/precache-manifest.6d274133e44697ae6738a3496178bfb1.js"
 );
 
 self.addEventListener('message', (event) => {
