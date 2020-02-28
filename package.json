@@ -32,7 +32,7 @@
   "author": "Charlie Davison",
   "license": "ISC",
   "dependencies": {
-    "wurd-web": "file:../wurd-web"
+    "wurd-web": "^7.2.0"
   },
   "peerDependencies": {
     "react": "^15.0.0"
