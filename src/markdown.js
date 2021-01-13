@@ -11,7 +11,7 @@ export default function WurdMarkdown({
 }) {
   block = block || wurd.content;
 
-  const text = block.markdown(id, vars);
+  const text = block.markdown(id, vars, rest);
 
   const elProps = {
     ...rest,

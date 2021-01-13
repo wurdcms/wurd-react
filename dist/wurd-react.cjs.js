@@ -2,10 +2,13 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+var React = require('react');
+var wurd = require('wurd-web');
 
-var React = _interopDefault(require('react'));
-var wurd = _interopDefault(require('wurd-web'));
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
+var wurd__default = /*#__PURE__*/_interopDefaultLegacy(wurd);
 
 function WurdText({
   block,
@@ -14,19 +17,19 @@ function WurdText({
   vars,
   ...rest
 }) {
-  block = block || wurd.content;
+  block = block || wurd__default['default'].content;
 
   const text = block.text(id, vars);
 
   const elProps = { ...rest };
 
-  if (wurd.editMode) {
+  if (wurd__default['default'].editMode) {
     const editorType = vars ? 'data-wurd-md' : 'data-wurd';
 
     elProps[editorType] = block.id(sid || id);
   }
 
-  return React.createElement(Component, elProps, text);
+  return React__default['default'].createElement(Component, elProps, text);
 }
 
 function WurdMarkdown({
@@ -36,24 +39,24 @@ function WurdMarkdown({
   vars,
   ...rest
 }) {
-  block = block || wurd.content;
+  block = block || wurd__default['default'].content;
 
-  const text = block.markdown(id, vars);
+  const text = block.markdown(id, vars, rest);
 
   const elProps = {
     ...rest,
     dangerouslySetInnerHTML: { __html: text }
   };
 
-  if (wurd.editMode) {
+  if (wurd__default['default'].editMode) {
     elProps['data-wurd-md'] = block.id(sid || id);
   }
 
-  return React.createElement(Component, elProps);
+  return React__default['default'].createElement(Component, elProps);
 }
 
 function WurdImage({ block, id, sid, ...rest }) {
-  block = block || wurd.content;
+  block = block || wurd__default['default'].content;
 
   const url = block.text(id);
 
@@ -62,11 +65,11 @@ function WurdImage({ block, id, sid, ...rest }) {
     src: url
   };
 
-  if (wurd.editMode) {
+  if (wurd__default['default'].editMode) {
     elProps['data-wurd-img'] = block.id(sid || id);
   }
 
-  return React.createElement('img', elProps);
+  return React__default['default'].createElement('img', elProps);
 }
 
 function WurdList({
@@ -76,15 +79,15 @@ function WurdList({
   keys = 'title',
   ...rest
 }) {
-  block = block || wurd.content;
+  block = block || wurd__default['default'].content;
 
   const elProps = { ...rest };
 
-  if (wurd.editMode) {
+  if (wurd__default['default'].editMode) {
     elProps['data-wurd-list'] = block.id(id);
     elProps['data-wurd-list-props'] = keys;
   }
-  return React.createElement(Component, elProps,
+  return React__default['default'].createElement(Component, elProps,
     block.map(id, (item, itemId) => children(item, itemId))
   );
 }
@@ -104,41 +107,46 @@ function WurdObject({
   children,
   ...rest
 }) {
-  block = block || wurd.content;
+  block = block || wurd__default['default'].content;
 
   const elProps = { ...rest };
 
-  if (wurd.editMode) {
+  if (wurd__default['default'].editMode) {
     // Normalise keys to string in form 'key1,key2'
 
     elProps['data-wurd-obj'] = block.id(sid || id);
     elProps['data-wurd-obj-props'] = Array.isArray(keys) ? keys.join(',') : keys;
   }
 
-  return React.createElement(Component, elProps, children);
+  return React__default['default'].createElement(Component, elProps, children);
 }
 
-wurd.setBlockHelpers({
+wurd__default['default'].setBlockHelpers({
   Text: function (props) {
-    return React.createElement(WurdText, { block: this, ...props });
+    return React__default['default'].createElement(WurdText, { block: this, ...props });
   },
   Markdown: function (props) {
-    return React.createElement(WurdMarkdown, { block: this, ...props });
+    return React__default['default'].createElement(WurdMarkdown, { block: this, ...props });
   },
   Image: function (props) {
-    return React.createElement(WurdImage, { block: this, ...props });
+    return React__default['default'].createElement(WurdImage, { block: this, ...props });
   },
   List: function (props) {
-    return React.createElement(WurdList, { block: this, ...props });
+    return React__default['default'].createElement(WurdList, { block: this, ...props });
   },
   Object: function (props) {
-    return React.createElement(WurdObject, { block: this, ...props });
+    return React__default['default'].createElement(WurdObject, { block: this, ...props });
   },
 });
 
+Object.defineProperty(exports, 'default', {
+  enumerable: true,
+  get: function () {
+    return wurd__default['default'];
+  }
+});
 exports.WurdImage = WurdImage;
 exports.WurdList = WurdList;
 exports.WurdMarkdown = WurdMarkdown;
 exports.WurdObject = WurdObject;
 exports.WurdText = WurdText;
-exports.default = wurd;

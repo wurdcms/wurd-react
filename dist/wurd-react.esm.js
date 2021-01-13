@@ -1,5 +1,6 @@
 import React from 'react';
 import wurd from 'wurd-web';
+export { default } from 'wurd-web';
 
 function WurdText({
   block,
@@ -32,7 +33,7 @@ function WurdMarkdown({
 }) {
   block = block || wurd.content;
 
-  const text = block.markdown(id, vars);
+  const text = block.markdown(id, vars, rest);
 
   const elProps = {
     ...rest,
@@ -130,5 +131,4 @@ wurd.setBlockHelpers({
   },
 });
 
-export default wurd;
 export { WurdImage, WurdList, WurdMarkdown, WurdObject, WurdText };
