@@ -504,7 +504,7 @@
       /**
        * Loads sections of content so that items are ready to be accessed with #get(id)
        *
-       * @param {String|Array<String>} sectionNames     Array or comma-separated string of sections e.g. `common,user,items`
+       * @param {String|Array<String>} sectionNames     Top-level sections to load e.g. `main,home`
        */
 
     }, {
@@ -524,17 +524,20 @@
           if (typeof sectionNames === 'string') sectionNames = sectionNames.split(','); // Check for cached sections
 
           var cachedContent = store.getSections(sectionNames);
-          var uncachedSectionNames = Object.keys(cachedContent).filter(function (section) {
+          var cachedSectionNames = sectionNames.filter(function (section) {
+            return cachedContent[section] !== undefined;
+          });
+          var uncachedSectionNames = sectionNames.filter(function (section) {
             return cachedContent[section] === undefined;
           });
-          debug && console.info('from cache: ', uncachedSectionNames); // Return now if all content was in cache
+          debug && console.info('Wurd: from cache:', cachedSectionNames); // Return now if all content was in cache
 
           if (!uncachedSectionNames.length) {
             return resolve(_this6.content);
           } // Some sections not in cache; fetch them from server
 
 
-          debug && console.info('from server: ', uncachedSectionNames);
+          debug && console.info('Wurd: from server:', uncachedSectionNames);
           return _this6._fetchSections(uncachedSectionNames).then(function (fetchedContent) {
             // Cache for next time
             store.setSections(fetchedContent); // Return the main Block instance for using content
