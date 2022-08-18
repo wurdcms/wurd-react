@@ -1,16 +1,16 @@
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import babel from 'rollup-plugin-babel';
-import { uglify } from 'rollup-plugin-uglify';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import babel from '@rollup/plugin-babel';
+import { terser } from 'rollup-plugin-terser';
 import filesize from 'rollup-plugin-filesize';
-import { eslint } from 'rollup-plugin-eslint';
+import eslint from '@rollup/plugin-eslint';
 import pkg from './package.json';
 
 export default [
   // browser-friendly UMD build
   {
     input: 'src/index.js',
-    external: ['react'],
+    external: ['react', 'marked'],
     output: [
       {
         name: 'wurd',
@@ -18,7 +18,8 @@ export default [
         format: 'umd',
         exports: 'named', // because we export wurd-web as default and React components as named exports
         globals: {
-          'react': 'React',
+          react: 'React',
+          marked: 'marked',
         },
         plugins: [filesize()],
       },
@@ -28,9 +29,10 @@ export default [
         format: 'umd',
         exports: 'named',
         globals: {
-          'react': 'React',
+          react: 'React',
+          marked: 'marked'
         },
-        plugins: [uglify()],
+        plugins: [terser()],
       }
     ],
     plugins: [

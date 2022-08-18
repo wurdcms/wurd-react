@@ -1,12 +1,13 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'react'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.wurd = {}, global.React));
-})(this, (function (exports, React) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react'), require('marked')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'react', 'marked'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.wurd = {}, global.React, global.marked));
+})(this, (function (exports, React, marked) { 'use strict';
 
   function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
   var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
+  var marked__default = /*#__PURE__*/_interopDefaultLegacy(marked);
 
   function ownKeys(object, enumerableOnly) {
     var keys = Object.keys(object);
@@ -32,6 +33,16 @@
     }
 
     return target;
+  }
+
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+      return typeof obj;
+    } : function (obj) {
+      return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    }, _typeof(obj);
   }
 
   function _classCallCheck(instance, Constructor) {
@@ -110,18 +121,76 @@
     return target;
   }
 
+  var is_object = isObject$1;
+
+  function isObject$1(val) {
+    return !(val == null || _typeof(val) !== 'object' || Array.isArray(val));
+  }
+
+  /*
+  eslint
+  no-multi-spaces: ["error", {exceptions: {"VariableDeclarator": true}}]
+  padded-blocks: ["error", {"classes": "always"}]
+  max-len: ["error", 80]
+  */
+
+  var array_some = some$1;
+
+  function some$1(arr, fn) {
+    var len = arr.length;
+    var i = -1;
+
+    while (++i < len) {
+      if (fn(arr[i], i, arr)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /*
+  eslint
+  no-multi-spaces: ["error", {exceptions: {"VariableDeclarator": true}}]
+  padded-blocks: ["error", {"classes": "always"}]
+  max-len: ["error", 80]
+  */
+
+  var isObject = is_object;
+  var some = array_some;
+  var getPropertyValue_1 = getPropertyValue;
+
+  function getPropertyValue(obj, path) {
+    if (!isObject(obj) || typeof path !== 'string') {
+      return obj;
+    }
+
+    var clone = obj;
+    some(path.split('.'), procPath);
+    return clone;
+
+    function procPath(p) {
+      clone = clone[p];
+
+      if (!clone) {
+        return true;
+      }
+    }
+  }
+
   /**
    * @param {Object} data
    *
    * @return {String}
    */
-  function encodeQueryString(data) {
+
+  var encodeQueryString = function encodeQueryString(data) {
     var parts = Object.keys(data).map(function (key) {
       var value = data[key];
       return encodeURIComponent(key) + '=' + encodeURIComponent(value);
     });
     return parts.join('&');
-  }
+  };
   /**
    * Replaces {{mustache}} style placeholders in text with variables
    *
@@ -132,13 +201,15 @@
    */
 
 
-  function replaceVars(text) {
+  var replaceVars = function replaceVars(text) {
     var vars = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (typeof text !== 'string') return text;
-    return text.replace(/{{([\w.-]+)}}/g, function (_, key) {
-      return vars[key] || '';
+    Object.keys(vars).forEach(function (key) {
+      var val = vars[key];
+      text = text.replace(new RegExp("{{".concat(key, "}}"), 'g'), val);
     });
-  }
+    return text;
+  };
 
   var Store = /*#__PURE__*/function () {
     /**
@@ -152,9 +223,8 @@
       this.rawContent = rawContent;
     }
     /**
-     * Get a specific piece of content, top-level or nested
+     * @param {String} path
      *
-     * @param {String} path e.g. 'section','section.subSection','a.b.c.d'
      * @return {Mixed}
      */
 
@@ -162,31 +232,9 @@
     _createClass(Store, [{
       key: "get",
       value: function get(path) {
-        if (!path) return this.rawContent;
-        return path.split('.').reduce(function (acc, k) {
-          return acc && acc[k];
-        }, this.rawContent);
+        return getPropertyValue_1(this.rawContent, path);
       }
       /**
-       * Load top-level sections of content
-       *
-       * @param {String[]} sectionNames
-       * @return {Object}
-       */
-
-    }, {
-      key: "getSections",
-      value: function getSections(sectionNames) {
-        var _this = this;
-
-        var entries = sectionNames.map(function (key) {
-          return [key, _this.rawContent[key]];
-        });
-        return Object.fromEntries(entries);
-      }
-      /**
-       * Save top-levle sections of content
-       *
        * @param {Object} sections       Top level sections of content
        */
 
@@ -202,7 +250,7 @@
 
   var Block = /*#__PURE__*/function () {
     function Block(wurd, path) {
-      var _this2 = this;
+      var _this = this;
 
       _classCallCheck(this, Block);
 
@@ -218,7 +266,7 @@
 
       var methodNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
       methodNames.forEach(function (name) {
-        _this2[name] = _this2[name].bind(_this2);
+        _this[name] = _this[name].bind(_this);
       });
     }
     /**
@@ -299,28 +347,14 @@
        *
        * @param {String} path       Item path e.g. `section.item`
        * @param {Object} [vars]     Variables to replace in the text
-       * @param {Boolean} [opts.inline]
        *
        * @return {Mixed}
        */
 
     }, {
       key: "markdown",
-      value: function markdown(path, vars, opts) {
-        var _this$wurd$markdown = this.wurd.markdown,
-            parse = _this$wurd$markdown.parse,
-            parseInline = _this$wurd$markdown.parseInline;
-        var text = this.text(path, vars);
-
-        if (opts !== null && opts !== void 0 && opts.inline && parseInline) {
-          return parseInline(text);
-        }
-
-        if (parse) {
-          return parse(text);
-        }
-
-        return text;
+      value: function markdown(path, vars) {
+        return marked__default["default"](this.text(path, vars));
       }
       /**
        * Iterates over a collection / list object with the given callback.
@@ -332,7 +366,7 @@
     }, {
       key: "map",
       value: function map(path, fn) {
-        var _this3 = this;
+        var _this2 = this;
 
         var listContent = this.get(path) || _defineProperty({}, Date.now(), {});
 
@@ -343,7 +377,7 @@
           index++;
           var itemPath = [path, key].join('.');
 
-          var itemBlock = _this3.block(itemPath);
+          var itemBlock = _this2.block(itemPath);
 
           return fn.call(undefined, itemBlock, currentIndex);
         });
@@ -429,12 +463,12 @@
     return Block;
   }();
 
-  var WIDGET_URL = 'https://widget.wurd.io/widget.js';
-  var API_URL = 'https://api.wurd.io';
+  var WIDGET_URL = 'https://edit-v3.wurd.io/widget.js';
+  var API_URL = 'https://api-v3.wurd.io';
 
   var Wurd = /*#__PURE__*/function () {
     function Wurd(appName, options) {
-      var _this4 = this;
+      var _this3 = this;
 
       _classCallCheck(this, Wurd);
 
@@ -443,7 +477,7 @@
 
       var methodNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.content));
       methodNames.forEach(function (name) {
-        _this4[name] = _this4.content[name].bind(_this4.content);
+        _this3[name] = _this3.content[name].bind(_this3.content);
       });
       this.connect(appName, options);
     }
@@ -456,24 +490,22 @@
      * @param {Boolean} [options.draft]             If true, loads draft content; otherwise loads published content
      * @param {Object} [options.blockHelpers]       Functions to help accessing content and creating editable regions
      * @param {Object} [options.rawContent]         Content to populate the store with
-     * @param {Function} [options.markdown.parse]   Markdown parser function, e.g. marked.parse(str)
-     * @param {Function} [options.markdown.parseInline] Markdown inline parser function, e.g. marked.parseInline(str)
      */
 
 
     _createClass(Wurd, [{
       key: "connect",
       value: function connect(appName) {
-        var _this5 = this;
+        var _this4 = this;
 
         var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         this.app = appName;
         this.draft = false;
         this.editMode = false; // Set allowed options
 
-        ['draft', 'lang', 'markdown', 'debug'].forEach(function (name) {
+        ['draft', 'lang', 'debug'].forEach(function (name) {
           var val = options[name];
-          if (typeof val !== 'undefined') _this5[name] = val;
+          if (typeof val !== 'undefined') _this4[name] = val;
         }); // Activate edit mode if required
 
         switch (options.editMode) {
@@ -502,15 +534,15 @@
         return this;
       }
       /**
-       * Loads sections of content so that items are ready to be accessed with #get(id)
+       * Loads a section of content so that it's items are ready to be accessed with #get(id)
        *
-       * @param {String|Array<String>} sectionNames     Top-level sections to load e.g. `main,home`
+       * @param {String} path     Section path e.g. `section`
        */
 
     }, {
       key: "load",
-      value: function load(sectionNames) {
-        var _this6 = this;
+      value: function load(path) {
+        var _this5 = this;
 
         var app = this.app,
             store = this.store,
@@ -518,66 +550,42 @@
         return new Promise(function (resolve, reject) {
           if (!app) {
             return reject(new Error('Use wurd.connect(appName) before wurd.load()'));
-          } // Normalise string sectionNames to array
+          } // Return cached version if available
 
 
-          if (typeof sectionNames === 'string') sectionNames = sectionNames.split(','); // Check for cached sections
+          var sectionContent = store.get(path);
 
-          var cachedContent = store.getSections(sectionNames);
-          var cachedSectionNames = sectionNames.filter(function (section) {
-            return cachedContent[section] !== undefined;
-          });
-          var uncachedSectionNames = sectionNames.filter(function (section) {
-            return cachedContent[section] === undefined;
-          });
-          debug && console.info('Wurd: from cache:', cachedSectionNames); // Return now if all content was in cache
-
-          if (!uncachedSectionNames.length) {
-            return resolve(_this6.content);
-          } // Some sections not in cache; fetch them from server
+          if (sectionContent) {
+            debug && console.info('from cache: ', path);
+            return resolve(sectionContent);
+          } // No cached version; fetch from server
 
 
-          debug && console.info('Wurd: from server:', uncachedSectionNames);
-          return _this6._fetchSections(uncachedSectionNames).then(function (fetchedContent) {
-            // Cache for next time
-            store.setSections(fetchedContent); // Return the main Block instance for using content
+          debug && console.info('from server: ', path); // Build request URL
 
-            resolve(_this6.content);
+          var params = ['draft', 'lang'].reduce(function (memo, param) {
+            if (_this5[param]) memo[param] = _this5[param];
+            return memo;
+          }, {});
+          var url = "".concat(API_URL, "/apps/").concat(app, "/content/").concat(path, "?").concat(encodeQueryString(params));
+          return fetch(url).then(function (res) {
+            return res.json();
+          }).then(function (result) {
+            if (result.error) {
+              if (result.error.message) {
+                throw new Error(result.error.message);
+              } else {
+                throw new Error("Error loading ".concat(path));
+              }
+            } // Cache for next time
+            // TODO: Does this cause problems if future load() calls use nested paths e.g. main.subsection
+
+
+            store.setSections(result);
+            resolve(_this5.content);
           })["catch"](function (err) {
             return reject(err);
           });
-        });
-      }
-    }, {
-      key: "_fetchSections",
-      value: function _fetchSections(sectionNames) {
-        var _this7 = this;
-
-        var app = this.app; // Build request URL
-
-        var params = ['draft', 'lang'].reduce(function (memo, param) {
-          if (_this7[param]) memo[param] = _this7[param];
-          return memo;
-        }, {});
-        var url = "".concat(API_URL, "/apps/").concat(app, "/content/").concat(sectionNames, "?").concat(encodeQueryString(params));
-        return this._fetch(url).then(function (result) {
-          if (result.error) {
-            if (result.error.message) {
-              throw new Error(result.error.message);
-            } else {
-              throw new Error("Error loading ".concat(sectionNames));
-            }
-          }
-
-          return result;
-        });
-      }
-    }, {
-      key: "_fetch",
-      value: function _fetch(url) {
-        return fetch(url).then(function (res) {
-          if (!res.ok) throw new Error("Error loading ".concat(url, ": ").concat(res.statusText));
-          return res.json();
         });
       }
     }, {
