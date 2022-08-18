@@ -5,6 +5,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import wurd from 'wurd-react';
+import { marked } from 'marked';
 
 import App from './app';
 
@@ -12,6 +13,7 @@ import App from './app';
 // Connect to Wurd CMS
 wurd.connect('example', {
   editMode: 'querystring', // Add '?edit to the URL to trigger edit mode'
+  markdown: marked,
 });
 
 

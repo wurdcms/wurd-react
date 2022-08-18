@@ -1,5 +1,6 @@
 import React from 'react';
 import wurd from 'wurd-web';
+export { default } from 'wurd-web';
 
 function WurdText({
   block,
@@ -130,5 +131,4 @@ wurd.setBlockHelpers({
   },
 });
 
-export default wurd;
 export { WurdImage, WurdList, WurdMarkdown, WurdObject, WurdText };
