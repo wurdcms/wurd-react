@@ -142,14 +142,21 @@
 
   var Store = /*#__PURE__*/function () {
     /**
-     * @param {Object} rawContent       Initial content
+     * @param {Object} rawContent           Initial content
+     * @param {String} opts.storageKey      localStorage key
+     * @param {Number} opts.ttl             cache time to live in ms (defaults to 1 hour)
      */
     function Store() {
+      var _opts$ttl;
+
       var rawContent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       _classCallCheck(this, Store);
 
       this.rawContent = rawContent;
+      this.storageKey = opts.storageKey || 'wurdContent';
+      this.ttl = (_opts$ttl = opts.ttl) !== null && _opts$ttl !== void 0 ? _opts$ttl : 3600000;
     }
     /**
      * Get a specific piece of content, top-level or nested
@@ -168,32 +175,80 @@
         }, this.rawContent);
       }
       /**
-       * Load top-level sections of content
+       * Load top-level sections of content from localStorage
        *
-       * @param {String[]} sectionNames
-       * @return {Object}
+       * @param {String[]} sectionNames Names of top-level content sections to load e.g. ['main','nav']
+       *    Unused here but likely to be used in future/other Store implementation
+       * @param {Object} [options]
+       * @param {String} [options.lang] Language
+       * @return {Object} content
        */
 
     }, {
-      key: "getSections",
-      value: function getSections(sectionNames) {
-        var _this = this;
+      key: "load",
+      value: function load(sectionNames) {
+        var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+            lang = _ref.lang;
 
-        var entries = sectionNames.map(function (key) {
-          return [key, _this.rawContent[key]];
-        });
-        return Object.fromEntries(entries);
+        var rawContent = this.rawContent,
+            storageKey = this.storageKey,
+            ttl = this.ttl;
+
+        try {
+          // Find cached content
+          var cachedContent = JSON.parse(localStorage.getItem(storageKey));
+          var metaData = cachedContent && cachedContent._wurd; // Check if it has expired
+
+          if (!cachedContent || !metaData || metaData.savedAt + ttl < Date.now()) {
+            return rawContent;
+          } // Check it's in the correct language
+
+
+          if (metaData.lang !== lang) {
+            return rawContent;
+          } // Remove metadata
+
+
+          delete cachedContent['_wurd']; // Add cached content to memory content
+
+          Object.assign(rawContent, cachedContent);
+          return rawContent;
+        } catch (err) {
+          console.error('Wurd: error loading cache:', err);
+          return rawContent;
+        }
       }
       /**
-       * Save top-levle sections of content
+       * Save top-level sections of content to localStorage
        *
-       * @param {Object} sections       Top level sections of content
+       * @param {Object} sections
+       * @param {Boolean} [options.cache] Whether to save the content to cache
        */
 
     }, {
-      key: "setSections",
-      value: function setSections(sections) {
-        Object.assign(this.rawContent, sections);
+      key: "save",
+      value: function save(sections) {
+        var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+            lang = _ref2.lang;
+
+        var rawContent = this.rawContent,
+            storageKey = this.storageKey;
+        Object.assign(rawContent, sections);
+        localStorage.setItem(storageKey, JSON.stringify(_objectSpread2(_objectSpread2({}, rawContent), {}, {
+          _wurd: {
+            savedAt: Date.now(),
+            lang: lang
+          }
+        })));
+      }
+      /**
+       * Clears the localStorage cache
+       */
+
+    }, {
+      key: "clear",
+      value: function clear() {
+        localStorage.removeItem(this.storageKey);
       }
     }]);
 
@@ -202,7 +257,7 @@
 
   var Block = /*#__PURE__*/function () {
     function Block(wurd, path) {
-      var _this2 = this;
+      var _this = this;
 
       _classCallCheck(this, Block);
 
@@ -218,7 +273,7 @@
 
       var methodNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
       methodNames.forEach(function (name) {
-        _this2[name] = _this2[name].bind(_this2);
+        _this[name] = _this[name].bind(_this);
       });
     }
     /**
@@ -332,7 +387,7 @@
     }, {
       key: "map",
       value: function map(path, fn) {
-        var _this3 = this;
+        var _this2 = this;
 
         var listContent = this.get(path) || _defineProperty({}, Date.now(), {});
 
@@ -343,7 +398,7 @@
           index++;
           var itemPath = [path, key].join('.');
 
-          var itemBlock = _this3.block(itemPath);
+          var itemBlock = _this2.block(itemPath);
 
           return fn.call(undefined, itemBlock, currentIndex);
         });
@@ -433,8 +488,13 @@
   var API_URL = 'https://api.wurd.io';
 
   var Wurd = /*#__PURE__*/function () {
-    function Wurd(appName, options) {
-      var _this4 = this;
+    /**
+     * @param {String} appName
+     */
+    function Wurd(appName) {
+      var _this3 = this;
+
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       _classCallCheck(this, Wurd);
 
@@ -443,7 +503,7 @@
 
       var methodNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this.content));
       methodNames.forEach(function (name) {
-        _this4[name] = _this4.content[name].bind(_this4.content);
+        _this3[name] = _this3.content[name].bind(_this3.content);
       });
       this.connect(appName, options);
     }
@@ -452,19 +512,20 @@
      *
      * @param {String} appName
      * @param {Object} [options]
-     * @param {Boolean|String} [options.editMode]   Options for enabling edit mode: `true` or `'querystring'`
-     * @param {Boolean} [options.draft]             If true, loads draft content; otherwise loads published content
-     * @param {Object} [options.blockHelpers]       Functions to help accessing content and creating editable regions
-     * @param {Object} [options.rawContent]         Content to populate the store with
-     * @param {Function} [options.markdown.parse]   Markdown parser function, e.g. marked.parse(str)
-     * @param {Function} [options.markdown.parseInline] Markdown inline parser function, e.g. marked.parseInline(str)
+     * @param {Boolean} [options.lang] Specific language to use
+     * @param {Boolean|String} [options.editMode] Options for enabling edit mode: `true` or `'querystring'`
+     * @param {Boolean} [options.draft] If true, loads draft content; otherwise loads published content
+     * @param {Object} [options.markdown] Enable markdown parsing. Works directly with `marked` npm package
+     *                                    or an object of shape {parse: Function, parseInline: Function}
+     * @param {Object} [options.blockHelpers] Functions to help accessing content and creating editable regions
+     * @param {Object} [options.rawContent] Content to populate the store with
      */
 
 
     _createClass(Wurd, [{
       key: "connect",
       value: function connect(appName) {
-        var _this5 = this;
+        var _this4 = this;
 
         var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         this.app = appName;
@@ -473,7 +534,7 @@
 
         ['draft', 'lang', 'markdown', 'debug'].forEach(function (name) {
           var val = options[name];
-          if (typeof val !== 'undefined') _this5[name] = val;
+          if (typeof val !== 'undefined') _this4[name] = val;
         }); // Activate edit mode if required
 
         switch (options.editMode) {
@@ -492,8 +553,13 @@
         }
 
         if (options.rawContent) {
-          this.store.setSections(options.rawContent);
+          this.store.save(options.rawContent, {
+            lang: options.lang
+          });
         }
+
+        if (options.storageKey) this.store.storageKey = options.storageKey;
+        if (options.ttl) this.store.ttl = options.ttl;
 
         if (options.blockHelpers) {
           this.setBlockHelpers(options.blockHelpers);
@@ -510,53 +576,68 @@
     }, {
       key: "load",
       value: function load(sectionNames) {
-        var _this6 = this;
+        var _this5 = this;
 
         var app = this.app,
             store = this.store,
+            lang = this.lang,
+            editMode = this.editMode,
             debug = this.debug;
-        return new Promise(function (resolve, reject) {
-          if (!app) {
-            return reject(new Error('Use wurd.connect(appName) before wurd.load()'));
-          } // Normalise string sectionNames to array
+
+        if (!app) {
+          return Promise.reject(new Error('Use wurd.connect(appName) before wurd.load()'));
+        } // Normalise string sectionNames to array
 
 
-          if (typeof sectionNames === 'string') sectionNames = sectionNames.split(','); // Check for cached sections
+        var sections = typeof sectionNames === 'string' ? sectionNames.split(',') : sectionNames; // When in editMode we skip the cache completely
 
-          var cachedContent = store.getSections(sectionNames);
-          var cachedSectionNames = sectionNames.filter(function (section) {
-            return cachedContent[section] !== undefined;
+        if (editMode) {
+          return this._fetchSections(sections).then(function (result) {
+            store.save(result, {
+              lang: lang
+            }); // Clear the cache so changes are reflected immediately when out of editMode
+
+            store.clear();
+            return _this5.content;
           });
-          var uncachedSectionNames = sectionNames.filter(function (section) {
-            return cachedContent[section] === undefined;
+        } // Check for cached sections
+
+
+        var cachedContent = store.load(sections, {
+          lang: lang
+        });
+        var uncachedSections = sections.filter(function (section) {
+          return cachedContent[section] === undefined;
+        });
+        if (debug) console.info('Wurd: from cache:', sections.filter(function (section) {
+          return cachedContent[section] !== undefined;
+        })); // Return now if all content was in cache
+
+        if (uncachedSections.length === 0) {
+          return Promise.resolve(this.content);
+        } // Otherwise fetch remaining sections
+
+
+        return this._fetchSections(uncachedSections).then(function (result) {
+          // Cache for next time
+          store.save(result, {
+            lang: lang
           });
-          debug && console.info('Wurd: from cache:', cachedSectionNames); // Return now if all content was in cache
-
-          if (!uncachedSectionNames.length) {
-            return resolve(_this6.content);
-          } // Some sections not in cache; fetch them from server
-
-
-          debug && console.info('Wurd: from server:', uncachedSectionNames);
-          return _this6._fetchSections(uncachedSectionNames).then(function (fetchedContent) {
-            // Cache for next time
-            store.setSections(fetchedContent); // Return the main Block instance for using content
-
-            resolve(_this6.content);
-          })["catch"](function (err) {
-            return reject(err);
-          });
+          return _this5.content;
         });
       }
     }, {
       key: "_fetchSections",
       value: function _fetchSections(sectionNames) {
-        var _this7 = this;
+        var _this6 = this;
 
-        var app = this.app; // Build request URL
+        var app = this.app,
+            debug = this.debug; // Some sections not in cache; fetch them from server
+
+        if (debug) console.info('Wurd: from server:', sectionNames); // Build request URL
 
         var params = ['draft', 'lang'].reduce(function (memo, param) {
-          if (_this7[param]) memo[param] = _this7[param];
+          if (_this6[param]) memo[param] = _this6[param];
           return memo;
         }, {});
         var url = "".concat(API_URL, "/apps/").concat(app, "/content/").concat(sectionNames, "?").concat(encodeQueryString(params));
@@ -597,7 +678,13 @@
           script.setAttribute('data-lang', lang);
         }
 
-        document.getElementsByTagName('body')[0].appendChild(script);
+        var prevScript = document.body.querySelector("script[src=\"".concat(WIDGET_URL, "\"]"));
+
+        if (prevScript) {
+          document.body.removeChild(prevScript);
+        }
+
+        document.body.appendChild(script);
       }
     }, {
       key: "setBlockHelpers",

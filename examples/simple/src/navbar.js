@@ -20,6 +20,11 @@ export default function Navbar({ content }) {
             </NavDropdown>
           )}
         </content.Object>
+
+        <ul className="nav navbar-nav navbar-right">
+          <li><a href="?lang=en"><content.Text id="english" /></a></li>
+          <li><a href="?lang=es"><content.Text id="spanish" /></a></li>
+        </ul>
       </div>
     </nav>
   );

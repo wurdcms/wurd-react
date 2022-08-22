@@ -12,8 +12,17 @@ import App from './app';
 
 // Connect to Wurd CMS
 wurd.connect('example', {
-  editMode: 'querystring', // Add '?edit to the URL to trigger edit mode'
+  // Add '?edit to the URL to trigger edit mode'
+  editMode: 'querystring',
+
+  // Enable markdown
   markdown: marked,
+
+  // Switch language when ?lang=es is added to the URL
+  lang: new URLSearchParams(window.location.search).get('lang'),
+
+  debug: true,
+  ttl: 10000,
 });
 
 

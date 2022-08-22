@@ -1,6 +1,6 @@
 {
   "name": "wurd-react",
-  "version": "8.0.0-beta.2",
+  "version": "8.0.0-beta.3",
   "description": "Components to easily integrate the Wurd CMS into your React app",
   "main": "dist/wurd-react.cjs.js",
   "module": "dist/wurd-react.esm.js",
@@ -32,7 +32,7 @@
   "author": "Charlie Davison",
   "license": "ISC",
   "dependencies": {
-    "wurd-web": "^8.0.0-beta.2"
+    "wurd-web": "^8.0.0-beta.3"
   },
   "peerDependencies": {
     "react": "^15.0.0"
