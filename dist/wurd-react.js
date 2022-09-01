@@ -519,6 +519,7 @@
      *                                    or an object of shape {parse: Function, parseInline: Function}
      * @param {Object} [options.blockHelpers] Functions to help accessing content and creating editable regions
      * @param {Object} [options.rawContent] Content to populate the store with
+     * @param {Function} [options.onLoad] Callback that runs whenever load() completes. Signature: onLoad(content) => {}
      */
 
 
@@ -532,7 +533,7 @@
         this.draft = false;
         this.editMode = false; // Set allowed options
 
-        ['draft', 'lang', 'markdown', 'debug'].forEach(function (name) {
+        ['draft', 'lang', 'markdown', 'debug', 'onLoad'].forEach(function (name) {
           var val = options[name];
           if (typeof val !== 'undefined') _this4[name] = val;
         }); // Activate edit mode if required
@@ -576,13 +577,13 @@
     }, {
       key: "load",
       value: function load(sectionNames) {
-        var _this5 = this;
-
         var app = this.app,
             store = this.store,
             lang = this.lang,
             editMode = this.editMode,
-            debug = this.debug;
+            debug = this.debug,
+            onLoad = this.onLoad,
+            content = this.content;
 
         if (!app) {
           return Promise.reject(new Error('Use wurd.connect(appName) before wurd.load()'));
@@ -597,8 +598,10 @@
               lang: lang
             }); // Clear the cache so changes are reflected immediately when out of editMode
 
-            store.clear();
-            return _this5.content;
+            store.clear(); // Pass main content Block to callbacks
+
+            if (onLoad) onLoad(content);
+            return content;
           });
         } // Check for cached sections
 
@@ -614,7 +617,9 @@
         })); // Return now if all content was in cache
 
         if (uncachedSections.length === 0) {
-          return Promise.resolve(this.content);
+          // Pass main content Block to callbacks
+          if (onLoad) onLoad(content);
+          return Promise.resolve(content);
         } // Otherwise fetch remaining sections
 
 
@@ -622,14 +627,16 @@
           // Cache for next time
           store.save(result, {
             lang: lang
-          });
-          return _this5.content;
+          }); // Pass main content Block to callbacks
+
+          if (onLoad) onLoad(content);
+          return content;
         });
       }
     }, {
       key: "_fetchSections",
       value: function _fetchSections(sectionNames) {
-        var _this6 = this;
+        var _this5 = this;
 
         var app = this.app,
             debug = this.debug; // Some sections not in cache; fetch them from server
@@ -637,7 +644,7 @@
         if (debug) console.info('Wurd: from server:', sectionNames); // Build request URL
 
         var params = ['draft', 'lang'].reduce(function (memo, param) {
-          if (_this6[param]) memo[param] = _this6[param];
+          if (_this5[param]) memo[param] = _this5[param];
           return memo;
         }, {});
         var url = "".concat(API_URL, "/apps/").concat(app, "/content/").concat(sectionNames, "?").concat(encodeQueryString(params));
