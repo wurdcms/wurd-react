@@ -34,9 +34,6 @@
   "dependencies": {
     "wurd-web": "^8.0.0-beta.5"
   },
-  "peerDependencies": {
-    "react": "^15.0.0"
-  },
   "files": [
     "*.md",
     "dist",
