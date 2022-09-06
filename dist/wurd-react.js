@@ -484,9 +484,6 @@
     return Block;
   }();
 
-  var WIDGET_URL = 'https://widget.wurd.io/widget.js';
-  var API_URL = 'https://api.wurd.io';
-
   var Wurd = /*#__PURE__*/function () {
     /**
      * @param {String} appName
@@ -498,6 +495,8 @@
 
       _classCallCheck(this, Wurd);
 
+      this.widgetUrl = 'https://widget.wurd.io/widget.js';
+      this.apiUrl = 'https://api.wurd.io';
       this.store = new Store();
       this.content = new Block(this, null); // Add block shortcut methods to the main Wurd instance
 
@@ -647,7 +646,7 @@
           if (_this5[param]) memo[param] = _this5[param];
           return memo;
         }, {});
-        var url = "".concat(API_URL, "/apps/").concat(app, "/content/").concat(sectionNames, "?").concat(encodeQueryString(params));
+        var url = "".concat(this.apiUrl, "/apps/").concat(app, "/content/").concat(sectionNames, "?").concat(encodeQueryString(params));
         return this._fetch(url).then(function (result) {
           if (result.error) {
             if (result.error.message) {
@@ -677,7 +676,7 @@
         this.editMode = true;
         this.draft = true;
         var script = document.createElement('script');
-        script.src = WIDGET_URL;
+        script.src = this.widgetUrl;
         script.async = true;
         script.setAttribute('data-app', app);
 
@@ -685,7 +684,7 @@
           script.setAttribute('data-lang', lang);
         }
 
-        var prevScript = document.body.querySelector("script[src=\"".concat(WIDGET_URL, "\"]"));
+        var prevScript = document.body.querySelector("script[src=\"".concat(this.widgetUrl, "\"]"));
 
         if (prevScript) {
           document.body.removeChild(prevScript);
