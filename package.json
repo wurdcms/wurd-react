@@ -1,6 +1,6 @@
 {
   "name": "wurd-react",
-  "version": "8.0.0-beta.6",
+  "version": "8.0.0",
   "description": "Components to easily integrate the Wurd CMS into your React app",
   "main": "dist/wurd-react.cjs.js",
   "module": "dist/wurd-react.esm.js",
