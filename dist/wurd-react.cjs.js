@@ -36,12 +36,12 @@ function WurdMarkdown({
   block,
   id, sid,
   type = 'div', component: Component = type,
-  vars,
+  vars, inline,
   ...rest
 }) {
   block = block || wurd__default["default"].content;
 
-  const text = block.markdown(id, vars);
+  const text = block.markdown(id, vars, { inline });
 
   const elProps = {
     ...rest,

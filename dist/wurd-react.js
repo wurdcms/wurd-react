@@ -730,7 +730,7 @@
     return /*#__PURE__*/React__default["default"].createElement(Component, elProps, text);
   }
 
-  var _excluded$3 = ["block", "id", "sid", "type", "component", "vars"];
+  var _excluded$3 = ["block", "id", "sid", "type", "component", "vars", "inline"];
   function WurdMarkdown(_ref) {
     var block = _ref.block,
         id = _ref.id,
@@ -740,10 +740,13 @@
         _ref$component = _ref.component,
         Component = _ref$component === void 0 ? type : _ref$component,
         vars = _ref.vars,
+        inline = _ref.inline,
         rest = _objectWithoutProperties(_ref, _excluded$3);
 
     block = block || instance.content;
-    var text = block.markdown(id, vars);
+    var text = block.markdown(id, vars, {
+      inline: inline
+    });
 
     var elProps = _objectSpread2(_objectSpread2({}, rest), {}, {
       dangerouslySetInnerHTML: {
